@@ -1,0 +1,37 @@
+// Prisma schema - SQLite local
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Release {
+  id                   String   @id @default(cuid())
+  sourceId             String   // ID de la fuente (rss-nextjs-blog, api-github-etc)
+  technology           String
+  version              String
+  releaseDate          DateTime
+  tldr                 String
+  description          String   @default("")
+  breakingChange       Boolean  @default(false)
+  features             String?  // JSON array
+  improvements         String?  // JSON array
+  bugFixes             String?  // JSON array
+  breakingChanges      String?  // JSON array
+  officialUrl          String?
+  tags                 String?  // JSON array
+  stack                String?
+  category             String?
+  previousVersion      String?
+  estimatedMigrationTime Int?
+  migrationComplexity  String?  // low, medium, high, critical
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([technology, version])
+  @@index([stack])
+  @@index([category])
+  @@index([releaseDate])
+}

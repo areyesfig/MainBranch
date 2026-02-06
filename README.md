@@ -2,6 +2,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+1. Copia `.env.example` a `.env` y configura las variables (ver comentarios en el archivo).
+2. Ejecuta las migraciones y seed: `npx prisma migrate dev && npm run db:seed`
+
 First, run the development server:
 
 ```bash
