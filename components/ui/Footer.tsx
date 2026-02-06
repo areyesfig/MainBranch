@@ -67,14 +67,6 @@ export default function Footer() {
                     RSS Feed
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/roadmap"
-                    className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                  >
-                    Roadmap
-                  </Link>
-                </li>
               </ul>
             </div>
 

@@ -126,36 +126,20 @@ export default async function Home() {
 
       {/* Quick Links */}
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-2">
-          <Link
-            href="/timeline"
-            className="group rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-700"
-          >
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Timeline de Releases
-            </h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Vista cronológica de todos los lanzamientos por año
-            </p>
-            <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400">
-              Ver timeline <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </span>
-          </Link>
-          <Link
-            href="/roadmap"
-            className="group rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-700"
-          >
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Roadmap
-            </h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Próximos releases planificados y fechas estimadas
-            </p>
-            <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400">
-              Ver roadmap <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </span>
-          </Link>
-        </div>
+        <Link
+          href="/timeline"
+          className="group block max-w-md rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-700"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Timeline de Releases
+          </h3>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Vista cronológica de todos los lanzamientos por año
+          </p>
+          <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400">
+            Ver timeline <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </Link>
       </div>
     </div>
   );

@@ -60,12 +60,6 @@ export default function Navbar() {
               Timeline
             </Link>
             <Link
-              href="/roadmap"
-              className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-            >
-              Roadmap
-            </Link>
-            <Link
               href="/about"
               className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
             >
@@ -124,13 +118,6 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Timeline
-              </Link>
-              <Link
-                href="/roadmap"
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Roadmap
               </Link>
               <Link
                 href="/about"

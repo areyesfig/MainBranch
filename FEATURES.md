@@ -89,12 +89,7 @@ Cada release incluye:
 - Sección destacada en página principal
 - CVE y enlaces a detalles del release
 
-### 9. Roadmap de Próximos Releases
-- Página `/roadmap`
-- Estados: planificado, beta, RC, retrasado
-- Fechas estimadas y características previstas
-
-### 10. Búsqueda Avanzada
+### 9. Búsqueda Avanzada
 - Componente `SearchBar` en página de releases
 - Búsqueda por tecnología, características, breaking changes, tags
 - Combinable con filtro por stack
