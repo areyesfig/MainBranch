@@ -2,11 +2,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getReleaseById } from "@/lib/data/releases";
-import { formatDate } from "@/lib/utils";
+import { formatDate, sanitizeReleaseText } from "@/lib/utils";
 import BreakingChangesDetail from "@/components/news/BreakingChangesDetail";
 import MigrationGuide from "@/components/news/MigrationGuide";
 import EcosystemImpact from "@/components/news/EcosystemImpact";
 import VersionComparison from "@/components/news/VersionComparison";
+import AIReleaseExplanation from "@/components/news/AIReleaseExplanation";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,6 +20,25 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
   if (!release) {
     notFound();
   }
+
+  // Limpiar textos para evitar ruido (markdown, URLs, referencias)
+  const safe = (t: string | undefined | null, max = 10000) =>
+    sanitizeReleaseText(t, max);
+  const sanitizedTldr = safe(release.tldr);
+  const sanitizedDescription = safe(release.description);
+  const sanitizedFeatures = release.features?.map((f) => safe(f, 2000)) ?? [];
+  const sanitizedImprovements =
+    release.improvements?.map((f) => safe(f, 2000)) ?? [];
+  const sanitizedBugFixes = release.bugFixes?.map((f) => safe(f, 2000)) ?? [];
+  const sanitizedBreakingChanges =
+    release.breakingChanges?.map((c) => safe(c, 2000)) ?? [];
+  const sanitizedMigrationSteps =
+    release.migrationSteps?.map((step) => ({
+      ...step,
+      title: safe(step.title, 200),
+      description: safe(step.description, 2000),
+      codeExample: step.codeExample ? safe(step.codeExample, 3000) : undefined,
+    })) ?? [];
 
   return (
     <div className="bg-gray-50 dark:bg-gray-950">
@@ -52,7 +72,9 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
           <h2 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
             Resumen (TLDR)
           </h2>
-          <p className="text-gray-700 dark:text-gray-300">{release.tldr}</p>
+          <p className="whitespace-pre-line text-gray-700 dark:text-gray-300">
+            {sanitizedTldr}
+          </p>
         </div>
 
         {/* Version Comparison */}
@@ -73,24 +95,29 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
           <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
             Descripción Detallada
           </h2>
-          <p className="text-gray-700 dark:text-gray-300">{release.description}</p>
+          <p className="whitespace-pre-line text-gray-700 dark:text-gray-300">
+            {sanitizedDescription}
+          </p>
         </div>
 
+        {/* Explicación con IA */}
+        <AIReleaseExplanation releaseId={release.id} />
+
         {/* Breaking Changes */}
-        {release.breakingChange && release.breakingChanges && (
+        {release.breakingChange && sanitizedBreakingChanges.length > 0 && (
           <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
             <BreakingChangesDetail
-              breakingChanges={release.breakingChanges}
+              breakingChanges={sanitizedBreakingChanges}
               codeExamples={release.codeExamples}
             />
           </div>
         )}
 
         {/* Migration Guide */}
-        {release.migrationSteps && release.migrationSteps.length > 0 && (
+        {sanitizedMigrationSteps.length > 0 && (
           <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
             <MigrationGuide
-              steps={release.migrationSteps}
+              steps={sanitizedMigrationSteps}
               estimatedTotalTime={release.estimatedMigrationTime}
               complexity={release.migrationComplexity}
             />
@@ -106,13 +133,13 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
 
         {/* Features, Improvements, Bug Fixes */}
         <div className="grid gap-6 md:grid-cols-3">
-          {release.features && release.features.length > 0 && (
+          {sanitizedFeatures.length > 0 && (
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 Nuevas Características
               </h3>
               <ul className="space-y-2">
-                {release.features.map((feature, index) => (
+                {sanitizedFeatures.map((feature, index) => (
                   <li
                     key={index}
                     className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
@@ -125,13 +152,13 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          {release.improvements && release.improvements.length > 0 && (
+          {sanitizedImprovements.length > 0 && (
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 Mejoras
               </h3>
               <ul className="space-y-2">
-                {release.improvements.map((improvement, index) => (
+                {sanitizedImprovements.map((improvement, index) => (
                   <li
                     key={index}
                     className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
@@ -144,13 +171,13 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          {release.bugFixes && release.bugFixes.length > 0 && (
+          {sanitizedBugFixes.length > 0 && (
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 Correcciones
               </h3>
               <ul className="space-y-2">
-                {release.bugFixes.map((fix, index) => (
+                {sanitizedBugFixes.map((fix, index) => (
                   <li
                     key={index}
                     className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"

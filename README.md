@@ -45,8 +45,9 @@ Abre [http://localhost:3000](http://localhost:3000).
 | Variable        | Descripción |
 |----------------|-------------|
 | `DATABASE_URL` | URL de Prisma. Por defecto `file:./dev.db` para SQLite. |
-| `CRON_SECRET`  | (Opcional) Secret para proteger `GET /api/sync`. En local sin valor se permiten requests; en Vercel conviene definirlo para el cron. |
+| `CRON_SECRET`  | **Requerido en producción.** Protege `GET /api/sync` (solo acepta `Authorization: Bearer <valor>`). En local puede omitirse para desarrollo. |
 | `GITHUB_TOKEN` | (Opcional) Token de GitHub para más cuota en APIs (evitar rate limit). |
+| `OPENAI_API_KEY` | (Opcional) Para la sección "Explicación con IA" en la página de detalle de cada release. Sin ella, esa función no estará disponible. |
 
 Ver comentarios en `.env.example`.
 
@@ -107,7 +108,7 @@ types/            # Tipos TypeScript
 ## Deploy (Vercel)
 
 1. Conectar el repositorio a Vercel.
-2. Añadir variables de entorno (por ejemplo `CRON_SECRET` para el cron).
+2. Añadir variables de entorno: **`CRON_SECRET`** (obligatorio en producción para que el cron pueda llamar a `/api/sync` de forma segura).
 3. Deploy: el cron configurado en `vercel.json` ejecutará `/api/sync` cada 6 horas.
 
 Para bases de datos en producción, usar un proveedor compatible con Prisma (por ejemplo PostgreSQL) y configurar `DATABASE_URL` en Vercel.

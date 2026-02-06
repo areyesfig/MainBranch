@@ -3,6 +3,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import { validateReleaseForDb } from "@/lib/schemas/release";
 import type { ReleaseNote } from "@/types/release";
 
 function parseJson<T>(json: string | null): T | undefined {
@@ -92,7 +93,8 @@ export async function upsertRelease(release: ReleaseNote, sourceId: string) {
 }
 
 /**
- * Inserta múltiples releases (upsert)
+ * Inserta múltiples releases (upsert).
+ * Valida cada ítem con Zod antes de llamar a Prisma; los inválidos se registran en errors.
  */
 export async function upsertReleases(
   releases: ReleaseNote[],
@@ -103,9 +105,17 @@ export async function upsertReleases(
   const errors: string[] = [];
 
   for (const release of releases) {
+    const validated = validateReleaseForDb(release);
+    if (!validated.success) {
+      const msg = validated.error.flatten().formErrors.join("; ") || validated.error.message;
+      errors.push(
+        `${release.technology ?? "?"} ${release.version ?? "?"}: validación ${msg}`
+      );
+      continue;
+    }
+
     try {
-      const result = await upsertRelease(release, sourceId);
-      // Prisma upsert siempre retorna - no podemos distinguir created vs updated fácilmente
+      await upsertRelease(release, sourceId);
       created++;
     } catch (error) {
       errors.push(

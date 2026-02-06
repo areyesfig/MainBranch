@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Bell, ChevronRight, Rss, Settings } from "lucide-react";
 import { useNotificationPreferences } from "@/contexts/NotificationContext";
 import type { ReleaseNote } from "@/types/release";
+import { isPlaceholderVersion } from "@/lib/utils";
 import ReleaseCard from "@/components/news/ReleaseCard";
 import NotificationPreferences from "@/components/ui/NotificationPreferences";
 import { getStackLabel } from "@/lib/stackLabels";
@@ -22,7 +23,10 @@ export default function NotificationsClient({
   const releases = useMemo(() => {
     if (!selectedStacks.length) return [];
     return initialReleases.filter(
-      (r) => r.stack && selectedStacks.includes(r.stack)
+      (r) =>
+        !isPlaceholderVersion(r.version) &&
+        r.stack &&
+        selectedStacks.includes(r.stack)
     );
   }, [initialReleases, selectedStacks]);
 

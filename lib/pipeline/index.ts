@@ -2,16 +2,13 @@
  * Pipeline principal: Fetch -> Parse -> Transform -> Persist
  *
  * Flujo:
- * 1. Obtener fuentes activas
- * 2. Fetch según tipo (RSS, API)
- * 3. Transformar a ReleaseNote
- * 4. Persistir en BD
- * 5. Retornar resultados
+ * 1. Obtener fuentes activas (o una por ID)
+ * 2. Factory devuelve el fetcher según tipo de fuente
+ * 3. Fetch -> Transformar a ReleaseNote -> Validar (Zod) -> Persistir
  */
 
 import { getActiveSources } from "@/lib/sources/config";
-import { fetchRss } from "./fetchers/rss";
-import { fetchApi } from "./fetchers/api";
+import { getFetcher } from "./fetchers/FetcherFactory";
 import { transformRssItem } from "./transformers/toReleaseNote";
 import { transformApiItem } from "./transformers/toReleaseNote";
 import { upsertReleases } from "@/lib/db/releases";
@@ -19,7 +16,8 @@ import type { DataSource, RawFetchResult, PipelineResult } from "@/types/sources
 import type { ReleaseNote } from "@/types/release";
 
 /**
- * Ejecuta el pipeline para una sola fuente
+ * Ejecuta el pipeline para una sola fuente.
+ * La fuente se identifica por objeto (resuelto por ID en api/sync).
  */
 export async function runPipelineForSource(
   source: DataSource
@@ -31,33 +29,33 @@ export async function runPipelineForSource(
   try {
     let rawResult: RawFetchResult;
 
-    switch (source.type) {
-      case "rss":
-        rawResult = await fetchRss(source);
-        releases = rawResult.items.map((item, i) =>
-          transformRssItem(item, source, i)
-        );
-        break;
-      case "api":
-        rawResult = await fetchApi(source);
-        releases = rawResult.items.map((item, i) =>
-          transformApiItem(item, source, i)
-        );
-        break;
-      case "scraping":
-        errors.push("Scraping no implementado - requiere Puppeteer/Playwright");
-        return {
-          sourceId: source.id,
-          releases: [],
-          rawCount: 0,
-          transformedCount: 0,
-          errors,
-          duration: Date.now() - startTime,
-        };
+    if (source.type === "scraping") {
+      errors.push("Scraping no implementado - requiere Puppeteer/Playwright");
+      return {
+        sourceId: source.id,
+        releases: [],
+        rawCount: 0,
+        transformedCount: 0,
+        errors,
+        duration: Date.now() - startTime,
+      };
     }
 
-    if (!rawResult!.success && rawResult!.error) {
-      errors.push(rawResult!.error);
+    const fetcher = getFetcher(source);
+    rawResult = await fetcher.fetch(source);
+
+    if (source.type === "rss") {
+      releases = rawResult.items.map((item, i) =>
+        transformRssItem(item, source, i)
+      );
+    } else if (source.type === "api") {
+      releases = rawResult.items.map((item, i) =>
+        transformApiItem(item, source, i)
+      );
+    }
+
+    if (!rawResult.success && rawResult.error) {
+      errors.push(rawResult.error);
     }
 
     // Persistir en BD
@@ -75,7 +73,7 @@ export async function runPipelineForSource(
     return {
       sourceId: source.id,
       releases,
-      rawCount: rawResult!.items.length,
+      rawCount: rawResult.items.length,
       transformedCount: releases.length,
       errors,
       duration: Date.now() - startTime,

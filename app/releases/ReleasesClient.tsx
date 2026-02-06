@@ -9,6 +9,7 @@ import SearchBar from "@/components/news/SearchBar";
 import { getUniqueStacks, getUniqueCategories } from "@/lib/mockData";
 import { getCategoryLabel } from "@/lib/categories";
 import { getStackLabel } from "@/lib/stackLabels";
+import { isPlaceholderVersion } from "@/lib/utils";
 import type { ReleaseNote } from "@/types/release";
 
 function searchInReleases(releases: ReleaseNote[], query: string): ReleaseNote[] {
@@ -59,6 +60,7 @@ export default function ReleasesClient({
 
   const filteredReleases = useMemo(() => {
     let result = searchInReleases(releases, searchQuery);
+    result = result.filter((r) => !isPlaceholderVersion(r.version));
     if (selectedCategory) {
       result = result.filter((r) => r.category === selectedCategory);
     }

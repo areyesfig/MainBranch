@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate, cn, sanitizeReleaseText, isPlaceholderVersion } from "@/lib/utils";
 
 describe("formatDate", () => {
   it("formatea Date a español", () => {
@@ -23,5 +23,40 @@ describe("cn", () => {
 
   it("devuelve string vacío sin argumentos", () => {
     expect(cn()).toBe("");
+  });
+});
+
+describe("sanitizeReleaseText", () => {
+  it("quita encabezados markdown y enlaces", () => {
+    const raw = "### Minor Changes - [#15258](https://github.com/withastro/astro/pull/15258)";
+    expect(sanitizeReleaseText(raw)).toBe("Minor Changes - #15258");
+  });
+
+  it("devuelve string vacío para null/undefined", () => {
+    expect(sanitizeReleaseText(null)).toBe("");
+    expect(sanitizeReleaseText(undefined)).toBe("");
+  });
+
+  it("trunca a maxLength y añade ellipsis", () => {
+    const long = "a".repeat(400);
+    const out = sanitizeReleaseText(long, 50);
+    expect(out.length).toBe(51);
+    expect(out.endsWith("…")).toBe(true);
+  });
+});
+
+describe("isPlaceholderVersion", () => {
+  it("devuelve true para 0.0.0 y v0.0.0", () => {
+    expect(isPlaceholderVersion("0.0.0")).toBe(true);
+    expect(isPlaceholderVersion("v0.0.0")).toBe(true);
+    expect(isPlaceholderVersion("V0.0.0")).toBe(true);
+  });
+  it("devuelve true para null/undefined", () => {
+    expect(isPlaceholderVersion(null)).toBe(true);
+    expect(isPlaceholderVersion(undefined)).toBe(true);
+  });
+  it("devuelve false para versiones reales", () => {
+    expect(isPlaceholderVersion("1.0.0")).toBe(false);
+    expect(isPlaceholderVersion("v18.2.0")).toBe(false);
   });
 });

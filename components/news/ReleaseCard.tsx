@@ -1,5 +1,5 @@
 import { ReleaseNote } from "@/types/release";
-import { formatDate } from "@/lib/utils";
+import { formatDate, sanitizeReleaseText } from "@/lib/utils";
 import { ExternalLink, AlertTriangle, Calendar, Tag } from "lucide-react";
 import Link from "next/link";
 
@@ -43,8 +43,10 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
         </div>
       </div>
 
-      {/* TLDR */}
-      <p className="mb-4 text-gray-700 dark:text-gray-300">{release.tldr}</p>
+      {/* TLDR: texto limpio y contenido en el recuadro */}
+      <p className="mb-4 line-clamp-4 break-words text-gray-700 dark:text-gray-300">
+        {sanitizeReleaseText(release.tldr)}
+      </p>
 
       {/* Features Preview */}
       {release.features && release.features.length > 0 && (

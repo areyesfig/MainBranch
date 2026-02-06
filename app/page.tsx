@@ -2,13 +2,16 @@ import Link from "next/link";
 import ReleaseCard from "@/components/news/ReleaseCard";
 import SecurityAlerts from "@/components/news/SecurityAlerts";
 import { getReleases } from "@/lib/data/releases";
+import { isPlaceholderVersion } from "@/lib/utils";
 import { ArrowRight, Bot, Rss, Sparkles } from "lucide-react";
 
 export default async function Home() {
   const releases = await getReleases();
+  const withRealVersion = (r: { version?: string }) => !isPlaceholderVersion(r.version);
 
-  // Mostrar los 3 releases más recientes
+  // Mostrar los 3 releases más recientes (excluir v0.0.0)
   const featuredReleases = releases
+    .filter(withRealVersion)
     .sort((a, b) => {
       const dateA = new Date(a.releaseDate).getTime();
       const dateB = new Date(b.releaseDate).getTime();
@@ -16,8 +19,9 @@ export default async function Home() {
     })
     .slice(0, 3);
 
-  // Releases de IA/ML y LLMs
+  // Releases de IA/ML y LLMs (excluir v0.0.0)
   const aiReleases = releases
+    .filter(withRealVersion)
     .filter((r) => r.category === "ai-ml" || r.category === "llms")
     .sort((a, b) => {
       const dateA = new Date(a.releaseDate).getTime();
