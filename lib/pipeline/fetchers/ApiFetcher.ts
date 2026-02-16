@@ -4,6 +4,10 @@
 
 import type { ApiSource, DataSource, RawFetchResult, RawFeedItem } from "@/types/sources";
 import type { BaseFetcher } from "./BaseFetcher";
+import { isAllowedUrl } from "./urlValidator";
+
+const MAX_RESPONSE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_DATA_PATH_DEPTH = 10;
 
 function normalizeApiItem(
   obj: Record<string, unknown>,
@@ -50,12 +54,17 @@ export class ApiFetcher implements BaseFetcher {
 
     const apiSource = source as ApiSource;
     try {
+      if (!isAllowedUrl(apiSource.url)) {
+        throw new Error("URL bloqueada por política de seguridad");
+      }
+
       const response = await fetch(apiSource.url, {
         method: apiSource.method || "GET",
         headers: {
           "Content-Type": "application/json",
           ...apiSource.headers,
         },
+        signal: AbortSignal.timeout(15000),
         cache: "no-store" as RequestCache,
       });
 
@@ -63,11 +72,20 @@ export class ApiFetcher implements BaseFetcher {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
+      // Validar tamaño de respuesta antes de parsear
+      const contentLength = response.headers.get("content-length");
+      if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_BYTES) {
+        throw new Error("Respuesta demasiado grande");
+      }
+
       const data = await response.json();
       let rawItems: unknown[] = [];
 
       if (apiSource.dataPath) {
         const path = apiSource.dataPath.split(".");
+        if (path.length > MAX_DATA_PATH_DEPTH) {
+          throw new Error("dataPath demasiado profundo");
+        }
         let current: unknown = data;
         for (const key of path) {
           current = (current as Record<string, unknown>)?.[key];
@@ -75,8 +93,10 @@ export class ApiFetcher implements BaseFetcher {
         rawItems = Array.isArray(current) ? current : [];
       } else if (Array.isArray(data)) {
         rawItems = data;
-      } else if (typeof data === "object") {
-        rawItems = Object.values(data).flat().filter(Array.isArray).flat() || [data];
+      } else if (typeof data === "object" && data !== null) {
+        const values = Object.values(data);
+        const firstArray = values.find(Array.isArray);
+        rawItems = Array.isArray(firstArray) ? firstArray : [data];
       }
 
       const items: RawFeedItem[] = rawItems.map((item: unknown) =>

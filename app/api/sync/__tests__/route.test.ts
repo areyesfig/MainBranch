@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GET } from "../route";
+import { GET, _resetSyncRateLimit } from "../route";
 
 vi.mock("@/lib/pipeline", () => ({
   runFullPipeline: vi.fn().mockResolvedValue({
-    results: [{ sourceId: "nextjs-blog", transformedCount: 5, rawCount: 10, errors: [], duration: 100 }],
+    results: [{ sourceId: "nextjs-blog", transformedCount: 5, rawCount: 10, errors: [], duration: 100, success: true }],
     allReleases: [{ id: "1", technology: "Next.js", version: "15" }],
     totalDuration: 200,
   }),
-  runPipelineForSource: vi.fn().mockResolvedValue({ transformedCount: 5 }),
+  runPipelineForSource: vi.fn().mockResolvedValue({ transformedCount: 5, success: true, sourceId: "nextjs-blog" }),
 }));
 
 vi.mock("@/lib/sources/config", () => ({
@@ -23,6 +23,7 @@ vi.mock("@/lib/data/releases", () => ({
 describe("GET /api/sync", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    _resetSyncRateLimit();
   });
 
   it("devuelve 200 sin CRON_SECRET (desarrollo)", async () => {

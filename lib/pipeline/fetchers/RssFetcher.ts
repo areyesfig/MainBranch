@@ -5,6 +5,7 @@
 import Parser from "rss-parser";
 import type { DataSource, RssSource, RawFetchResult, RawFeedItem } from "@/types/sources";
 import type { BaseFetcher } from "./BaseFetcher";
+import { isAllowedUrl } from "./urlValidator";
 
 const parser = new Parser({
   timeout: 10000,
@@ -27,6 +28,9 @@ export class RssFetcher implements BaseFetcher {
     }
     const rssSource = source as RssSource;
     try {
+      if (!isAllowedUrl(rssSource.url)) {
+        throw new Error("URL bloqueada por política de seguridad");
+      }
       const feed = await parser.parseURL(rssSource.url);
       const items: RawFeedItem[] = (feed.items || []).map((item) => ({
         title: item.title || "",
