@@ -1,3 +1,5 @@
+export const revalidate = 3600; // revalidar cada hora
+
 import { Suspense } from "react";
 import { getReleases } from "@/lib/data/releases";
 import ReleasesClient from "./ReleasesClient";

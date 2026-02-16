@@ -1,3 +1,5 @@
+export const revalidate = 3600; // revalidar cada hora
+
 import { getReleases } from "@/lib/data/releases";
 import NotificationsClient from "./NotificationsClient";
 

@@ -1,3 +1,5 @@
+export const revalidate = 3600; // revalidar cada hora
+
 import Link from "next/link";
 import ReleaseCard from "@/components/news/ReleaseCard";
 import SecurityAlerts from "@/components/news/SecurityAlerts";

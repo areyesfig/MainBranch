@@ -1,3 +1,5 @@
+export const revalidate = 3600; // revalidar cada hora
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getReleases } from "@/lib/data/releases";

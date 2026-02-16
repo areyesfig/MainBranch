@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
@@ -9,8 +10,33 @@ import EcosystemImpact from "@/components/news/EcosystemImpact";
 import VersionComparison from "@/components/news/VersionComparison";
 import AIReleaseExplanation from "@/components/news/AIReleaseExplanation";
 
+export const revalidate = 3600; // revalidar cada hora
+
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const release = await getReleaseById(id);
+
+  if (!release) {
+    return { title: "Release no encontrado — Main Branch" };
+  }
+
+  const title = `${release.technology} v${release.version} — Main Branch`;
+  const description = release.tldr || `Notas de lanzamiento de ${release.technology} ${release.version}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime: release.releaseDate,
+    },
+  };
 }
 
 export default async function ReleaseDetailPage({ params }: PageProps) {
