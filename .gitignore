@@ -49,3 +49,7 @@ prisma/dev.db-journal
 next-env.d.ts
 
 /lib/generated/prisma
+
+# editor / agent tooling
+.cursorrules
+.agents/
