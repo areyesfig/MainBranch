@@ -24,6 +24,14 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
 /**
  * Indica si la versión es un placeholder (ej. 0.0.0) que no debe mostrarse en tarjetas.
  */
+/**
+ * Detecta versiones pre-release (alpha, beta, rc, canary, dev, next, preview).
+ */
+export function isPreRelease(version: string | undefined | null): boolean {
+  if (!version) return false;
+  return /-(alpha|beta|rc|canary|dev|next|preview)/i.test(version);
+}
+
 export function isPlaceholderVersion(version: string | undefined | null): boolean {
   if (!version) return true;
   const normalized = version.replace(/^v/i, "").trim();

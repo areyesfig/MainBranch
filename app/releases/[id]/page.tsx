@@ -191,8 +191,9 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Official Link */}
-        {release.officialUrl && (
+        {/* Official Link — solo URLs http/https */}
+        {release.officialUrl &&
+          /^https?:\/\//i.test(release.officialUrl) && (
           <div className="mt-8 text-center">
             <a
               href={release.officialUrl}

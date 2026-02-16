@@ -3,7 +3,7 @@ import ReleaseCard from "@/components/news/ReleaseCard";
 import SecurityAlerts from "@/components/news/SecurityAlerts";
 import { getReleases } from "@/lib/data/releases";
 import { isPlaceholderVersion } from "@/lib/utils";
-import { ArrowRight, Bot, Rss, Sparkles } from "lucide-react";
+import { ArrowRight, Bot, Sparkles } from "lucide-react";
 
 export default async function Home() {
   const releases = await getReleases();
@@ -51,19 +51,6 @@ export default async function Home() {
               className="rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Ver Todos los Lanzamientos
-            </Link>
-            <Link
-              href="/about"
-              className="text-base font-semibold leading-6 text-gray-900 transition-colors hover:text-gray-700 dark:text-white dark:hover:text-gray-300"
-            >
-              Saber más <span aria-hidden="true">→</span>
-            </Link>
-            <Link
-              href="/feed"
-              className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
-            >
-              <Rss className="h-5 w-5" />
-              RSS Feed
             </Link>
           </div>
         </div>

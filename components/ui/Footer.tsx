@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Twitter, Mail, Rss } from "lucide-react";
+import { Github, Twitter, Mail } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -56,15 +56,6 @@ export default function Footer() {
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
                     Acerca de
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/feed"
-                    className="flex items-center gap-1 text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                  >
-                    <Rss className="h-4 w-4" />
-                    RSS Feed
                   </Link>
                 </li>
               </ul>

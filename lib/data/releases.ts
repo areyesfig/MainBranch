@@ -16,6 +16,13 @@ import {
   filterReleasesByStacks,
   searchReleases,
 } from "@/lib/mockData";
+import { isPreRelease, isPlaceholderVersion } from "@/lib/utils";
+
+function filterStable(releases: ReleaseNote[]): ReleaseNote[] {
+  return releases.filter(
+    (r) => !isPlaceholderVersion(r.version) && !isPreRelease(r.version)
+  );
+}
 
 let useDbCache: boolean | null = null;
 
@@ -39,10 +46,8 @@ async function shouldUseDb(): Promise<boolean> {
  */
 export async function getReleases(): Promise<ReleaseNote[]> {
   const useDb = await shouldUseDb();
-  if (useDb) {
-    return getReleasesFromDb();
-  }
-  return mockReleases;
+  const releases = useDb ? await getReleasesFromDb() : mockReleases;
+  return filterStable(releases);
 }
 
 /**
@@ -52,10 +57,10 @@ export async function getReleasesByStack(
   stack: string | null
 ): Promise<ReleaseNote[]> {
   const useDb = await shouldUseDb();
-  if (useDb) {
-    return getReleasesByStackFromDb(stack);
-  }
-  return filterReleasesByStack(stack);
+  const releases = useDb
+    ? await getReleasesByStackFromDb(stack)
+    : filterReleasesByStack(stack);
+  return filterStable(releases);
 }
 
 /**
@@ -65,11 +70,15 @@ export async function getReleasesByCategory(
   category: string | null
 ): Promise<ReleaseNote[]> {
   const useDb = await shouldUseDb();
+  let releases: ReleaseNote[];
   if (useDb) {
-    return getReleasesByCategoryFromDb(category);
+    releases = await getReleasesByCategoryFromDb(category);
+  } else if (!category) {
+    releases = mockReleases;
+  } else {
+    releases = mockReleases.filter((r) => r.category === category);
   }
-  if (!category) return mockReleases;
-  return mockReleases.filter((r) => r.category === category);
+  return filterStable(releases);
 }
 
 /**
@@ -79,11 +88,14 @@ export async function getReleasesByStacks(
   stacks: string[]
 ): Promise<ReleaseNote[]> {
   const useDb = await shouldUseDb();
+  let releases: ReleaseNote[];
   if (useDb) {
     const all = await getReleasesFromDb();
-    return all.filter((r) => r.stack && stacks.includes(r.stack));
+    releases = all.filter((r) => r.stack && stacks.includes(r.stack));
+  } else {
+    releases = filterReleasesByStacks(stacks);
   }
-  return filterReleasesByStacks(stacks);
+  return filterStable(releases);
 }
 
 /**
@@ -93,27 +105,33 @@ export async function searchReleasesAsync(
   query: string
 ): Promise<ReleaseNote[]> {
   const useDb = await shouldUseDb();
+  let releases: ReleaseNote[];
   if (useDb) {
     const all = await getReleasesFromDb();
-    if (!query.trim()) return all;
-    const lowerQuery = query.toLowerCase().trim();
-    return all.filter((release) => {
-      const searchableText = [
-        release.technology,
-        release.version,
-        release.tldr,
-        release.description,
-        release.category,
-        ...(release.features || []),
-        ...(release.breakingChanges || []),
-        ...(release.tags || []),
-      ]
-        .join(" ")
-        .toLowerCase();
-      return searchableText.includes(lowerQuery);
-    });
+    if (!query.trim()) {
+      releases = all;
+    } else {
+      const lowerQuery = query.toLowerCase().trim();
+      releases = all.filter((release) => {
+        const searchableText = [
+          release.technology,
+          release.version,
+          release.tldr,
+          release.description,
+          release.category,
+          ...(release.features || []),
+          ...(release.breakingChanges || []),
+          ...(release.tags || []),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return searchableText.includes(lowerQuery);
+      });
+    }
+  } else {
+    releases = searchReleases(query);
   }
-  return searchReleases(query);
+  return filterStable(releases);
 }
 
 /**

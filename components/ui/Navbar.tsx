@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, Bell } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { useNotificationPreferences } from "@/contexts/NotificationContext";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { selectedStacks } = useNotificationPreferences();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -38,20 +36,6 @@ export default function Navbar() {
               className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
             >
               Lanzamientos
-            </Link>
-            <Link
-              href="/notifications"
-              className="flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-            >
-              <span className="relative inline-flex">
-                <Bell className="h-5 w-5" />
-                {selectedStacks.length > 0 && (
-                  <span className="absolute -right-2 -top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white">
-                    {selectedStacks.length}
-                  </span>
-                )}
-              </span>
-              Notificaciones
             </Link>
             <Link
               href="/timeline"
@@ -98,19 +82,6 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Lanzamientos
-              </Link>
-              <Link
-                href="/notifications"
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Bell className="h-4 w-4" />
-                Notificaciones
-                {selectedStacks.length > 0 && (
-                  <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">
-                    {selectedStacks.length}
-                  </span>
-                )}
               </Link>
               <Link
                 href="/timeline"

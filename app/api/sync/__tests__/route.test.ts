@@ -78,6 +78,6 @@ describe("GET /api/sync", () => {
     const data = await res.json();
 
     expect(res.status).toBe(404);
-    expect(data.error).toContain("inexistente");
+    expect(data.error).toContain("no encontrada");
   });
 });
