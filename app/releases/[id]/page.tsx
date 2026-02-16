@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: "article",
-      publishedTime: release.releaseDate,
+      publishedTime: release.releaseDate instanceof Date ? release.releaseDate.toISOString() : release.releaseDate,
     },
   };
 }

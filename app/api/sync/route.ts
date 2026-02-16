@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       }
       const result = await runPipelineForSource(source);
       return Response.json({
-        success: result.success,
+        success: result.errors.length === 0,
         sourceId: result.sourceId,
         releasesCount: result.transformedCount,
       });
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
       results: results.map((r) => ({
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,
-        success: r.success,
+        success: r.errors.length === 0,
       })),
     });
   } catch (error) {

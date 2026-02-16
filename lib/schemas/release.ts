@@ -46,8 +46,6 @@ export type ReleaseForDb = z.infer<typeof releaseForDbSchema>;
  * Valida un objeto como ReleaseNote del pipeline y devuelve el dato listo para BD
  * o lanza/retorna errores según preferencia. Aquí usamos safeParse y retornamos resultado.
  */
-export function validateReleaseForDb(
-  data: unknown
-): z.SafeParseReturnType<unknown, ReleaseForDb> {
+export function validateReleaseForDb(data: unknown) {
   return releaseForDbSchema.safeParse(data);
 }

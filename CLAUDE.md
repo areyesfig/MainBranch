@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Main Branch** is a technology release aggregator built with Next.js 16 (App Router). It collects releases from 28+ tech sources (RSS feeds and GitHub/API endpoints), transforms and validates them, persists to SQLite via Prisma, and renders them with React Server Components.
+**Main Branch** is a technology release aggregator built with Next.js 16 (App Router). It collects releases from 28+ tech sources (RSS feeds and GitHub/API endpoints), transforms and validates them, persists to Neon Postgres via Prisma, and renders them with React Server Components.
 
 ## Commands
 
@@ -29,7 +29,7 @@ To trigger sync for a single source: `curl "http://localhost:3000/api/sync?sourc
 ### Data Pipeline
 
 ```
-[RSS/API Sources] → Fetchers → Transformers → Zod Validators → Prisma/SQLite → Server Components
+[RSS/API Sources] → Fetchers → Transformers → Zod Validators → Prisma/Postgres → Server Components
 ```
 
 - **Sources config**: `lib/sources/config.ts` — 16 RSS feeds + 12 API sources
@@ -55,7 +55,7 @@ To trigger sync for a single source: `curl "http://localhost:3000/api/sync?sourc
 
 ### Database
 
-SQLite with Prisma. Schema in `prisma/schema.prisma`. Key constraint: `@@unique([technology, version])` prevents duplicate releases. Array fields (features, tags, etc.) stored as JSON strings.
+Neon Postgres with Prisma (pg adapter). Schema in `prisma/schema.prisma`. Key constraint: `@@unique([technology, version])` prevents duplicate releases. Array fields (features, tags, etc.) stored as JSON strings.
 
 ## Conventions
 
@@ -67,7 +67,7 @@ SQLite with Prisma. Schema in `prisma/schema.prisma`. Key constraint: `@@unique(
 
 ## Environment Variables
 
-- `DATABASE_URL` — Prisma DB URL (default: `file:./dev.db`)
+- `DATABASE_URL` — Neon Postgres connection string (required)
 - `CRON_SECRET` — protects `/api/sync` in production
 - `GITHUB_TOKEN` — optional, increases GitHub API rate limit
 - `OPENAI_API_KEY` — optional, enables AI explanations
