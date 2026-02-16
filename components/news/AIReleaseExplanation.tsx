@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Sparkles, Loader2, AlertCircle } from "lucide-react";
 
 interface AIReleaseExplanationProps {
   releaseId: string;
 }
+
+const MAX_RETRIES = 2;
 
 /**
  * Sección que permite generar una explicación del release en lenguaje claro usando IA.
@@ -14,8 +16,10 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const retries = useRef(0);
 
   const handleGenerate = async () => {
+    if (retries.current >= MAX_RETRIES) return;
     setLoading(true);
     setError(null);
     try {
@@ -27,16 +31,20 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
       const data = await res.json();
 
       if (!res.ok) {
+        retries.current++;
         setError(data.error ?? "Error al generar la explicación");
         return;
       }
       setExplanation(data.explanation ?? "");
     } catch (e) {
+      retries.current++;
       setError(e instanceof Error ? e.message : "Error de conexión");
     } finally {
       setLoading(false);
     }
   };
+
+  const canRetry = !loading && !explanation && retries.current < MAX_RETRIES;
 
   return (
     <div className="mb-8 rounded-lg border border-violet-200 bg-white p-6 dark:border-violet-900 dark:bg-gray-900">
@@ -48,7 +56,7 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
         Genera un resumen en lenguaje claro de los cambios de este release, pensado para desarrolladores.
       </p>
 
-      {!explanation && !loading && !error && (
+      {canRetry && !error && (
         <button
           type="button"
           onClick={handleGenerate}
@@ -62,14 +70,25 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
       {loading && (
         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
           <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Generando explicación…</span>
+          <span>Generando explicación...</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="space-y-3">
+          <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+          {canRetry && (
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              Reintentar
+            </button>
+          )}
         </div>
       )}
 
