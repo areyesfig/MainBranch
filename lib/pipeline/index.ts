@@ -41,6 +41,7 @@ export async function runPipelineForSource(
       };
     }
 
+    console.log(`[pipeline] Fetching ${source.id} (${source.type})...`);
     const fetcher = getFetcher(source);
     rawResult = await fetcher.fetch(source);
 
@@ -55,6 +56,7 @@ export async function runPipelineForSource(
     }
 
     if (!rawResult.success && rawResult.error) {
+      console.error(`[pipeline] Error en ${source.id}: ${rawResult.error}`);
       errors.push(rawResult.error);
     }
 
@@ -62,13 +64,18 @@ export async function runPipelineForSource(
     if (releases.length > 0) {
       try {
         const { errors: dbErrors } = await upsertReleases(releases, source.id);
+        if (dbErrors.length > 0) {
+          console.error(`[pipeline] DB errors for ${source.id}:`, dbErrors);
+        }
         errors.push(...dbErrors);
       } catch (dbError) {
-        errors.push(
-          `BD: ${dbError instanceof Error ? dbError.message : "Error al guardar"}`
-        );
+        const msg = `BD: ${dbError instanceof Error ? dbError.message : "Error al guardar"}`;
+        console.error(`[pipeline] ${msg}`);
+        errors.push(msg);
       }
     }
+
+    console.log(`[pipeline] ${source.id}: ${rawResult.items.length} raw → ${releases.length} releases (${Date.now() - startTime}ms)`);
 
     return {
       sourceId: source.id,

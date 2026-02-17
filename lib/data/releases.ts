@@ -16,12 +16,10 @@ import {
   filterReleasesByStacks,
   searchReleases,
 } from "@/lib/mockData";
-import { isPreRelease, isPlaceholderVersion } from "@/lib/utils";
+import { isPreRelease } from "@/lib/utils";
 
 function filterStable(releases: ReleaseNote[]): ReleaseNote[] {
-  return releases.filter(
-    (r) => !isPlaceholderVersion(r.version) && !isPreRelease(r.version)
-  );
+  return releases.filter((r) => !isPreRelease(r.version));
 }
 
 let useDbCache: boolean | null = null;
@@ -33,10 +31,14 @@ async function shouldUseDb(): Promise<boolean> {
   if (useDbCache !== null) return useDbCache;
   try {
     const count = await getReleasesCount();
-    useDbCache = count > 0;
-    return useDbCache;
+    if (count > 0) {
+      useDbCache = true;
+      return true;
+    }
+    // No cachear false: re-intentar en el próximo request
+    return false;
   } catch {
-    useDbCache = false;
+    // No cachear false: re-intentar en el próximo request
     return false;
   }
 }

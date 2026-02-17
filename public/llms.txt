@@ -1,0 +1,58 @@
+# Main Branch
+
+> A technology release aggregator that tracks the latest releases and updates from 28+ tech sources across the development ecosystem.
+
+Main Branch collects release notes, changelogs, and updates from RSS feeds and GitHub/API endpoints, transforms and validates them, and presents them in an organized interface built with Next.js.
+
+## Pages
+
+- [Home](/) — Featured recent releases and AI/ML highlights
+- [All Releases](/releases) — Browse and filter all tracked releases
+- [Timeline](/timeline) — Chronological view of releases by year
+- [About](/about) — About the project
+- [Notifications](/notifications) — Configure RSS notification preferences
+
+## API
+
+- [RSS Feed](/feed) — RSS feed of the latest releases
+- [Sync API](/api/sync) — Triggers the data pipeline (protected)
+- [AI Explain](/api/releases/explain) — AI-powered release explanations
+
+## Tracked Technologies
+
+### Frontend
+- Next.js, React, Vue, Svelte, Astro, Nuxt, Remix, Vite, Tailwind CSS
+
+### Backend & Runtimes
+- Node.js, Deno, Rust, Go
+
+### AI & Machine Learning
+- OpenAI, Anthropic, Hugging Face, PyTorch
+
+### Tools & Platforms
+- TypeScript, GitHub, MDN, Vercel, Cloudflare
+
+## Categories
+
+Releases are organized into the following categories:
+- **frontend** — Frontend frameworks and libraries
+- **backend** — Backend runtimes and languages
+- **ai-ml** — AI and Machine Learning tools
+- **llms** — Large Language Models
+- **tools** — Developer tools
+- **devops** — DevOps and infrastructure
+
+## Data Pipeline
+
+Sources are fetched every 6 hours via a cron job. Each release goes through:
+1. Fetching from RSS feeds or GitHub/API endpoints
+2. Transformation and version extraction
+3. Validation with Zod schemas
+4. Persistence to PostgreSQL (deduplicated by technology + version)
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router, React Server Components)
+- **Database**: PostgreSQL (Neon) with Prisma ORM
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript

@@ -97,10 +97,12 @@ export async function GET(request: NextRequest) {
         );
       }
       const result = await runPipelineForSource(source);
+      invalidateReleasesCache();
       return Response.json({
         success: result.errors.length === 0,
         sourceId: result.sourceId,
         releasesCount: result.transformedCount,
+        errors: result.errors,
       });
     }
 
@@ -116,6 +118,7 @@ export async function GET(request: NextRequest) {
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,
         success: r.errors.length === 0,
+        errors: r.errors,
       })),
     });
   } catch (error) {

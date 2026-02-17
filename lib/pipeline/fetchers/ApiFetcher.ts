@@ -8,6 +8,7 @@ import { isAllowedUrl } from "./urlValidator";
 
 const MAX_RESPONSE_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_DATA_PATH_DEPTH = 10;
+const MAX_ITEMS = 15;
 
 function normalizeApiItem(
   obj: Record<string, unknown>,
@@ -58,12 +59,20 @@ export class ApiFetcher implements BaseFetcher {
         throw new Error("URL bloqueada por política de seguridad");
       }
 
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...apiSource.headers,
+      };
+
+      // Inyectar GITHUB_TOKEN para fuentes de GitHub API
+      const githubToken = process.env.GITHUB_TOKEN;
+      if (githubToken && apiSource.url.includes("api.github.com")) {
+        headers["Authorization"] = `token ${githubToken}`;
+      }
+
       const response = await fetch(apiSource.url, {
         method: apiSource.method || "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...apiSource.headers,
-        },
+        headers,
         signal: AbortSignal.timeout(15000),
         cache: "no-store" as RequestCache,
       });
@@ -99,9 +108,11 @@ export class ApiFetcher implements BaseFetcher {
         rawItems = Array.isArray(firstArray) ? firstArray : [data];
       }
 
-      const items: RawFeedItem[] = rawItems.map((item: unknown) =>
-        normalizeApiItem(item as Record<string, unknown>, apiSource)
-      );
+      const items: RawFeedItem[] = rawItems
+        .slice(0, MAX_ITEMS)
+        .map((item: unknown) =>
+          normalizeApiItem(item as Record<string, unknown>, apiSource)
+        );
 
       return {
         sourceId: apiSource.id,
