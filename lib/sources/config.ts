@@ -492,6 +492,22 @@ export const API_SOURCES: ApiSource[] = [
       "User-Agent": "TechReleaseNews/1.0",
     },
   },
+  {
+    id: "github-claude-code-releases",
+    name: "Claude Code Releases",
+    type: "api",
+    url: "https://api.github.com/repos/anthropics/claude-code/releases?per_page=10",
+    technology: "Claude Code",
+    stack: "claude",
+    category: "llms",
+    enabled: true,
+    fetchInterval: 120,
+    dataPath: "",
+    headers: {
+      Accept: "application/vnd.github.v3+json",
+      "User-Agent": "TechReleaseNews/1.0",
+    },
+  },
   // AI/ML Frameworks
   {
     id: "github-langchain-releases",
