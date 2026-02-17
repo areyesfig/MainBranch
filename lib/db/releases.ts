@@ -42,6 +42,7 @@ function dbToReleaseNote(
     previousVersion: r.previousVersion ?? undefined,
     estimatedMigrationTime: r.estimatedMigrationTime ?? undefined,
     migrationComplexity: r.migrationComplexity as ReleaseNote["migrationComplexity"] ?? undefined,
+    impactScore: r.impactScore ?? undefined,
   };
 }
 
@@ -75,6 +76,7 @@ export async function upsertRelease(release: ReleaseNote, sourceId: string) {
       previousVersion: release.previousVersion ?? null,
       estimatedMigrationTime: release.estimatedMigrationTime ?? null,
       migrationComplexity: release.migrationComplexity ?? null,
+      impactScore: release.impactScore ?? 0,
     },
     update: {
       tldr: release.tldr,
@@ -88,6 +90,7 @@ export async function upsertRelease(release: ReleaseNote, sourceId: string) {
       tags: release.tags ? JSON.stringify(release.tags) : null,
       stack: release.stack ?? null,
       category: release.category ?? null,
+      impactScore: release.impactScore ?? 0,
     },
   });
 }
@@ -199,4 +202,21 @@ export async function getReleasesInRange(
  */
 export async function getReleasesCount(): Promise<number> {
   return prisma.release.count();
+}
+
+/**
+ * Cuenta releases de una tecnología en los últimos N días
+ */
+export async function getRecentReleaseCount(
+  technology: string,
+  days: number = 30
+): Promise<number> {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  return prisma.release.count({
+    where: {
+      technology,
+      releaseDate: { gte: since },
+    },
+  });
 }

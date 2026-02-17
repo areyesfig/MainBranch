@@ -11,7 +11,8 @@ import { getActiveSources } from "@/lib/sources/config";
 import { getFetcher } from "./fetchers/FetcherFactory";
 import { transformRssItem } from "./transformers/toReleaseNote";
 import { transformApiItem } from "./transformers/toReleaseNote";
-import { upsertReleases } from "@/lib/db/releases";
+import { upsertReleases, getRecentReleaseCount } from "@/lib/db/releases";
+import { calculateImpactScore } from "./scoring/impactScore";
 import type { DataSource, RawFetchResult, PipelineResult } from "@/types/sources";
 import type { ReleaseNote } from "@/types/release";
 
@@ -58,6 +59,25 @@ export async function runPipelineForSource(
     if (!rawResult.success && rawResult.error) {
       console.error(`[pipeline] Error en ${source.id}: ${rawResult.error}`);
       errors.push(rawResult.error);
+    }
+
+    // Calcular impact score para cada release
+    if (releases.length > 0) {
+      try {
+        const recentCount = await getRecentReleaseCount(source.technology);
+        for (const release of releases) {
+          release.impactScore = await calculateImpactScore(
+            release,
+            source,
+            recentCount
+          );
+        }
+      } catch (scoreError) {
+        console.warn(
+          `[pipeline] Error calculando impactScore para ${source.id}:`,
+          scoreError instanceof Error ? scoreError.message : scoreError
+        );
+      }
     }
 
     // Persistir en BD

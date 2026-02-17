@@ -150,6 +150,16 @@ export async function getReleaseById(id: string): Promise<ReleaseNote | null> {
 }
 
 /**
+ * Obtiene releases ordenados por impactScore DESC
+ */
+export async function getReleasesSortedByImpact(): Promise<ReleaseNote[]> {
+  const releases = await getReleases();
+  return [...releases].sort(
+    (a, b) => (b.impactScore ?? 0) - (a.impactScore ?? 0)
+  );
+}
+
+/**
  * Invalida el caché (llamar después de sync)
  */
 export function invalidateReleasesCache() {

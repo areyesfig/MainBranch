@@ -151,4 +151,9 @@ export interface ReleaseNote {
    * Nivel de complejidad de migración
    */
   migrationComplexity?: "low" | "medium" | "high" | "critical";
+
+  /**
+   * Puntuación de impacto del release (0-100)
+   */
+  impactScore?: number;
 }
