@@ -26,6 +26,8 @@ export interface BaseSource {
   category?: string;
   status?: SourceStatus;
   enabled?: boolean;
+  /** Paquete npm asociado (para calcular popularidad) */
+  npmPackage?: string;
   /** Intervalo mínimo entre fetches (minutos) */
   fetchInterval?: number;
   /** Última vez que se ejecutó */

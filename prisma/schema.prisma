@@ -27,6 +27,7 @@ model Release {
   previousVersion      String?
   estimatedMigrationTime Int?
   migrationComplexity  String?  // low, medium, high, critical
+  impactScore          Int?     @default(0)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
@@ -34,4 +35,21 @@ model Release {
   @@index([stack])
   @@index([category])
   @@index([releaseDate])
+}
+
+model Digest {
+  id            String   @id @default(cuid())
+  period        String   // "weekly" | "monthly"
+  startDate     DateTime
+  endDate       DateTime
+  content       String   // Markdown generado por IA
+  technologies  String   // JSON array
+  releaseCount  Int      @default(0)
+  generatedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([period, startDate])
+  @@index([period])
+  @@index([endDate])
 }

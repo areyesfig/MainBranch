@@ -17,6 +17,7 @@ import {
   searchReleases,
 } from "@/lib/mockData";
 import { isPreRelease } from "@/lib/utils";
+import { invalidateAllReleaseCache } from "@/lib/cache/redis";
 
 function filterStable(releases: ReleaseNote[]): ReleaseNote[] {
   return releases.filter((r) => !isPreRelease(r.version));
@@ -150,8 +151,20 @@ export async function getReleaseById(id: string): Promise<ReleaseNote | null> {
 }
 
 /**
- * Invalida el caché (llamar después de sync)
+ * Obtiene releases ordenados por impactScore DESC
+ */
+export async function getReleasesSortedByImpact(): Promise<ReleaseNote[]> {
+  const releases = await getReleases();
+  return [...releases].sort(
+    (a, b) => (b.impactScore ?? 0) - (a.impactScore ?? 0)
+  );
+}
+
+/**
+ * Invalida el caché en memoria y en Redis (llamar después de sync)
  */
 export function invalidateReleasesCache() {
   useDbCache = null;
+  // Fire-and-forget: no bloqueamos el sync si Redis tarda o falla
+  invalidateAllReleaseCache().catch(() => {});
 }

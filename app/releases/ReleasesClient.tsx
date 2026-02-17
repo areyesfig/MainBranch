@@ -47,6 +47,7 @@ export default function ReleasesClient({
     () => searchParams.get("stack")
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "impact">("recent");
   const [releases] = useState(initialReleases);
   const stacks = getUniqueStacks(releases);
   const categories = getUniqueCategories(releases);
@@ -67,8 +68,13 @@ export default function ReleasesClient({
     if (selectedStack) {
       result = result.filter((r) => r.stack === selectedStack);
     }
+    if (sortBy === "impact") {
+      result = [...result].sort(
+        (a, b) => (b.impactScore ?? 0) - (a.impactScore ?? 0)
+      );
+    }
     return result;
-  }, [releases, selectedCategory, selectedStack, searchQuery]);
+  }, [releases, selectedCategory, selectedStack, searchQuery, sortBy]);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-950">
@@ -106,14 +112,37 @@ export default function ReleasesClient({
           />
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
+        {/* Sort + Results Count */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Mostrando {filteredReleases.length} lanzamiento{filteredReleases.length !== 1 ? "s" : ""}
             {selectedCategory && ` • categoría ${getCategoryLabel(selectedCategory)}`}
             {selectedStack && ` • ${getStackLabel(selectedStack)}`}
             {searchQuery && ` • búsqueda: "${searchQuery}"`}
           </p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Ordenar:</span>
+            <button
+              onClick={() => setSortBy("recent")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                sortBy === "recent"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+              }`}
+            >
+              Más recientes
+            </button>
+            <button
+              onClick={() => setSortBy("impact")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                sortBy === "impact"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+              }`}
+            >
+              Mayor impacto
+            </button>
+          </div>
         </div>
 
         {/* Releases Grid */}

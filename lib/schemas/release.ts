@@ -38,6 +38,7 @@ export const releaseForDbSchema = z.object({
   previousVersion: optionalString,
   estimatedMigrationTime: optionalNumber,
   migrationComplexity: migrationComplexitySchema,
+  impactScore: z.number().int().min(0).max(100).nullable().optional(),
 });
 
 export type ReleaseForDb = z.infer<typeof releaseForDbSchema>;

@@ -6,18 +6,19 @@
  *
  * Protecciones:
  * - Rate limit por IP: 10 requests cada 15 minutos.
- * - Límite global diario: 200 requests por día (para controlar costos).
- * - Caché en memoria: una vez generada la explicación de un release, se reutiliza.
+ * - Límite global diario: 200 requests por día (cross-instancia vía Redis).
+ * - Caché de explicaciones: Redis (24h) con fallback en memoria.
  */
 
 import { NextRequest } from "next/server";
 import { getReleaseById } from "@/lib/data/releases";
 import { explainReleaseWithAI } from "@/lib/ai/explainRelease";
+import { cacheGet, cacheSet, redisIncr, cacheGetRaw } from "@/lib/cache/redis";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-/* ── Rate limiter por IP (10 req / 15 min) ── */
+/* ── Rate limiter por IP (10 req / 15 min) — en memoria, por instancia ── */
 const RATE_WINDOW_MS = 15 * 60 * 1000;
 const RATE_MAX = 10;
 const hits = new Map<string, { count: number; reset: number }>();
@@ -33,40 +34,56 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_MAX;
 }
 
-/* ── Límite global diario (200 req / día) ── */
+/* ── Límite global diario (200 req / día) — Redis con fallback en memoria ── */
 const DAILY_MAX = 200;
-let dailyCount = 0;
-let dailyReset = Date.now() + 24 * 60 * 60 * 1000;
+let _dailyCount = 0;
+let _dailyReset = Date.now() + 24 * 60 * 60 * 1000;
 
-function isDailyLimitReached(): boolean {
-  const now = Date.now();
-  if (now > dailyReset) {
-    dailyCount = 0;
-    dailyReset = now + 24 * 60 * 60 * 1000;
+async function isDailyLimitReached(): Promise<boolean> {
+  // Intentar Redis primero (cross-instancia)
+  const countStr = await cacheGetRaw("mb:explain:daily-count");
+  if (countStr !== null) {
+    return parseInt(countStr, 10) >= DAILY_MAX;
   }
-  return dailyCount >= DAILY_MAX;
+  // Fallback en memoria (single-instancia)
+  const now = Date.now();
+  if (now > _dailyReset) {
+    _dailyCount = 0;
+    _dailyReset = now + 24 * 60 * 60 * 1000;
+  }
+  return _dailyCount >= DAILY_MAX;
 }
 
-function incrementDailyCount() {
-  dailyCount++;
+async function incrementDailyCount(): Promise<void> {
+  const val = await redisIncr("mb:explain:daily-count", 86400);
+  if (val === null) _dailyCount++; // fallback en memoria
 }
 
-/* ── Caché de explicaciones (releaseId → texto) ── */
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 horas
-const explanationCache = new Map<string, { text: string; expiresAt: number }>();
+/* ── Caché de explicaciones — Redis (24h) con fallback en memoria ── */
+const CACHE_TTL_SECS = 86400; // 24 horas
+const _memCache = new Map<string, { text: string; expiresAt: number }>();
 
-function getCachedExplanation(releaseId: string): string | null {
-  const entry = explanationCache.get(releaseId);
+async function getCachedExplanation(releaseId: string): Promise<string | null> {
+  // Redis primero
+  const fromRedis = await cacheGet<string>(`mb:explain:${releaseId}`);
+  if (fromRedis !== null) return fromRedis;
+  // Fallback memoria
+  const entry = _memCache.get(releaseId);
   if (!entry) return null;
   if (Date.now() > entry.expiresAt) {
-    explanationCache.delete(releaseId);
+    _memCache.delete(releaseId);
     return null;
   }
   return entry.text;
 }
 
-function cacheExplanation(releaseId: string, text: string) {
-  explanationCache.set(releaseId, { text, expiresAt: Date.now() + CACHE_TTL_MS });
+async function setCachedExplanation(
+  releaseId: string,
+  text: string
+): Promise<void> {
+  await cacheSet(`mb:explain:${releaseId}`, text, CACHE_TTL_SECS);
+  // Guardar también en memoria como respaldo
+  _memCache.set(releaseId, { text, expiresAt: Date.now() + CACHE_TTL_SECS * 1000 });
 }
 
 export async function POST(request: NextRequest) {
@@ -81,7 +98,7 @@ export async function POST(request: NextRequest) {
   }
 
   /* ── Límite global diario ── */
-  if (isDailyLimitReached()) {
+  if (await isDailyLimitReached()) {
     return Response.json(
       { error: "Se alcanzó el límite diario de explicaciones. Intenta mañana." },
       { status: 429 }
@@ -97,8 +114,8 @@ export async function POST(request: NextRequest) {
   }
 
   /* ── Validar Content-Type ── */
-  const contentType = request.headers.get("content-type");
-  if (!contentType?.includes("application/json")) {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.split(";")[0].trim().includes("application/json")) {
     return Response.json(
       { error: "Content-Type debe ser application/json" },
       { status: 415 }
@@ -124,7 +141,7 @@ export async function POST(request: NextRequest) {
   }
 
   /* ── Caché: devolver si ya existe ── */
-  const cached = getCachedExplanation(releaseId);
+  const cached = await getCachedExplanation(releaseId);
   if (cached) {
     return Response.json({ explanation: cached });
   }
@@ -139,8 +156,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const explanation = await explainReleaseWithAI(release, apiKey);
-    cacheExplanation(releaseId, explanation);
-    incrementDailyCount();
+    await setCachedExplanation(releaseId, explanation);
+    await incrementDailyCount();
     return Response.json({ explanation });
   } catch (error) {
     console.error("Error al generar explicación IA:", error);

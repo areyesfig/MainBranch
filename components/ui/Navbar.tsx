@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,14 +45,24 @@ export default function Navbar() {
               Timeline
             </Link>
             <Link
+              href="/digest"
+              className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+            >
+              Digests
+            </Link>
+            <Link
               href="/about"
               className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
             >
               Acerca de
             </Link>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
+            <ThemeToggle />
+          </div>
           <button
             onClick={toggleMenu}
             className="md:hidden rounded-md p-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -89,6 +100,13 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Timeline
+              </Link>
+              <Link
+                href="/digest"
+                className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Digests
               </Link>
               <Link
                 href="/about"

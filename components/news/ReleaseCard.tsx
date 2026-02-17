@@ -1,7 +1,34 @@
 import { ReleaseNote } from "@/types/release";
 import { formatDate, sanitizeReleaseText } from "@/lib/utils";
-import { ExternalLink, AlertTriangle, Calendar, Tag } from "lucide-react";
+import { ExternalLink, AlertTriangle, Calendar, Tag, TrendingUp } from "lucide-react";
 import Link from "next/link";
+
+function ImpactBadge({ score }: { score?: number }) {
+  if (score == null || score === 0) return null;
+
+  if (score >= 70) {
+    return (
+      <span className="flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800 dark:bg-red-900 dark:text-red-200">
+        <TrendingUp className="h-3 w-3" />
+        Alto impacto
+      </span>
+    );
+  }
+  if (score >= 40) {
+    return (
+      <span className="flex items-center gap-1 rounded-md bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+        <TrendingUp className="h-3 w-3" />
+        Medio impacto
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-1 rounded-md bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
+      <TrendingUp className="h-3 w-3" />
+      Bajo impacto
+    </span>
+  );
+}
 
 interface ReleaseCardProps {
   release: ReleaseNote;
@@ -18,7 +45,7 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
               {release.technology}
             </h3>
@@ -31,6 +58,7 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
                 Breaking Changes
               </span>
             )}
+            <ImpactBadge score={release.impactScore} />
           </div>
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-1">
