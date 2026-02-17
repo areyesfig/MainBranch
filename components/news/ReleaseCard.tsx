@@ -18,7 +18,7 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
               {release.technology}
             </h3>
