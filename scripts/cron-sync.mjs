@@ -7,7 +7,7 @@
  *   CRON_SECRET - Bearer token for sync endpoint authentication
  *
  * Usage:
- *   npx tsx scripts/cron-sync.ts
+ *   node scripts/cron-sync.mjs
  */
 
 const APP_URL = process.env.APP_URL;
