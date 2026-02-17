@@ -17,7 +17,6 @@ import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
 
 /* ── Rate limiter en memoria (1 req / 5 min por IP) ── */
 const SYNC_WINDOW_MS = 5 * 60 * 1000;

@@ -103,6 +103,8 @@ export async function runPipelineForSource(
 /**
  * Ejecuta el pipeline para todas las fuentes activas
  */
+const BATCH_SIZE = 10;
+
 export async function runFullPipeline(): Promise<{
   results: PipelineResult[];
   allReleases: ReleaseNote[];
@@ -110,10 +112,17 @@ export async function runFullPipeline(): Promise<{
 }> {
   const startTime = Date.now();
   const sources = getActiveSources();
+  const results: PipelineResult[] = [];
 
-  const results = await Promise.all(
-    sources.map((source) => runPipelineForSource(source))
-  );
+  // Procesar en lotes para evitar saturar conexiones y timeouts
+  for (let i = 0; i < sources.length; i += BATCH_SIZE) {
+    const batch = sources.slice(i, i + BATCH_SIZE);
+    console.log(`[pipeline] Procesando lote ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(sources.length / BATCH_SIZE)} (${batch.length} fuentes)`);
+    const batchResults = await Promise.all(
+      batch.map((source) => runPipelineForSource(source))
+    );
+    results.push(...batchResults);
+  }
 
   const allReleases = results.flatMap((r) => r.releases);
 
