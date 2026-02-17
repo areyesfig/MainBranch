@@ -31,13 +31,15 @@ async function shouldUseDb(): Promise<boolean> {
   if (useDbCache !== null) return useDbCache;
   try {
     const count = await getReleasesCount();
+    console.log("[shouldUseDb] release count:", count);
     if (count > 0) {
       useDbCache = true;
       return true;
     }
     // No cachear false: re-intentar en el próximo request
     return false;
-  } catch {
+  } catch (error) {
+    console.error("[shouldUseDb] DB error:", error instanceof Error ? error.message : error);
     // No cachear false: re-intentar en el próximo request
     return false;
   }
