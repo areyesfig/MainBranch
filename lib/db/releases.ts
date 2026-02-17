@@ -5,6 +5,12 @@
 import { prisma } from "@/lib/db";
 import { validateReleaseForDb } from "@/lib/schemas/release";
 import type { ReleaseNote } from "@/types/release";
+import {
+  cacheGet,
+  cacheSet,
+  CACHE_KEYS,
+  CACHE_TTL,
+} from "@/lib/cache/redis";
 
 function parseJson<T>(json: string | null): T | undefined {
   if (!json) return undefined;
@@ -131,55 +137,78 @@ export async function upsertReleases(
 }
 
 /**
- * Obtiene todos los releases de la BD
+ * Obtiene todos los releases de la BD (con caché Redis si está disponible)
  */
 export async function getReleasesFromDb(): Promise<ReleaseNote[]> {
+  const cached = await cacheGet<ReleaseNote[]>(CACHE_KEYS.ALL);
+  if (cached) return cached;
+
   const releases = await prisma.release.findMany({
     orderBy: { releaseDate: "desc" },
   });
-  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  const result = releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  await cacheSet(CACHE_KEYS.ALL, result);
+  return result;
 }
 
 /**
- * Obtiene releases por stack
+ * Obtiene releases por stack (con caché Redis si está disponible)
  */
 export async function getReleasesByStackFromDb(
   stack: string | null
 ): Promise<ReleaseNote[]> {
   if (!stack) return getReleasesFromDb();
+
+  const key = CACHE_KEYS.STACK(stack);
+  const cached = await cacheGet<ReleaseNote[]>(key);
+  if (cached) return cached;
+
   const releases = await prisma.release.findMany({
     where: { stack },
     orderBy: { releaseDate: "desc" },
   });
-  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  const result = releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  await cacheSet(key, result);
+  return result;
 }
 
 /**
- * Obtiene releases por categoría
+ * Obtiene releases por categoría (con caché Redis si está disponible)
  */
 export async function getReleasesByCategoryFromDb(
   category: string | null
 ): Promise<ReleaseNote[]> {
   if (!category) return getReleasesFromDb();
+
+  const key = CACHE_KEYS.CATEGORY(category);
+  const cached = await cacheGet<ReleaseNote[]>(key);
+  if (cached) return cached;
+
   const releases = await prisma.release.findMany({
     where: { category },
     orderBy: { releaseDate: "desc" },
   });
-  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  const result = releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  await cacheSet(key, result);
+  return result;
 }
 
 /**
- * Obtiene un release por ID
+ * Obtiene un release por ID (con caché Redis si está disponible)
  */
 export async function getReleaseByIdFromDb(id: string): Promise<ReleaseNote | null> {
-  const release = await prisma.release.findUnique({
-    where: { id },
-  });
-  return dbToReleaseNote(release);
+  const key = CACHE_KEYS.ID(id);
+  const cached = await cacheGet<ReleaseNote>(key);
+  if (cached) return cached;
+
+  const release = await prisma.release.findUnique({ where: { id } });
+  const result = dbToReleaseNote(release);
+  if (result) await cacheSet(key, result);
+  return result;
 }
 
 /**
- * Obtiene releases en un rango de fechas
+ * Obtiene releases en un rango de fechas (sin caché — clave demasiado dinámica)
  */
 export async function getReleasesInRange(
   startDate: Date,
@@ -198,10 +227,15 @@ export async function getReleasesInRange(
 }
 
 /**
- * Cuenta releases en la BD
+ * Cuenta releases en la BD (con caché corta — 5 min)
  */
 export async function getReleasesCount(): Promise<number> {
-  return prisma.release.count();
+  const cached = await cacheGet<number>(CACHE_KEYS.COUNT);
+  if (cached !== null) return cached;
+
+  const count = await prisma.release.count();
+  await cacheSet(CACHE_KEYS.COUNT, count, CACHE_TTL.SHORT);
+  return count;
 }
 
 /**
