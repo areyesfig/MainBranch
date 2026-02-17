@@ -71,6 +71,39 @@ export async function cacheSet(
 }
 
 /**
+ * Incremento atómico con TTL automático en el primer uso.
+ * Útil para contadores cross-instancia (rate limit diario, etc.).
+ * Devuelve el valor tras el incremento, o null si Redis no está disponible.
+ */
+export async function redisIncr(
+  key: string,
+  ttlSeconds: number
+): Promise<number | null> {
+  const redis = getClient();
+  if (!redis) return null;
+  try {
+    const val = await redis.incr(key);
+    if (val === 1) await redis.expire(key, ttlSeconds);
+    return val;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * GET de string puro (sin JSON.parse) — para contadores y valores simples.
+ */
+export async function cacheGetRaw(key: string): Promise<string | null> {
+  const redis = getClient();
+  if (!redis) return null;
+  try {
+    return await redis.get(key);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Elimina todas las claves mb:releases:* de Redis.
  * Se llama tras un sync para que el siguiente request sirva datos frescos.
  */

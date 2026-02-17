@@ -1,7 +1,29 @@
 import type { ReleaseNote } from "@/types/release";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://mainbranch.dev";
+function safeBaseUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_BASE_URL || "https://mainbranch.dev";
+  try {
+    const url = new URL(raw);
+    // Solo aceptar https (o http en desarrollo)
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return "https://mainbranch.dev";
+    }
+    return raw.replace(/\/$/, ""); // quitar trailing slash
+  } catch {
+    return "https://mainbranch.dev";
+  }
+}
+
+const BASE_URL = safeBaseUrl();
+
+function isValidHttpUrl(str: string): boolean {
+  try {
+    const url = new URL(str);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
 
 function escapeXml(str: string): string {
   return str
@@ -33,7 +55,9 @@ export function buildFeedXml({
     .map((r) => {
       const pubDate = new Date(r.releaseDate).toUTCString();
       const link =
-        r.officialUrl || `${BASE_URL}/releases/${r.id}`;
+        (r.officialUrl && isValidHttpUrl(r.officialUrl))
+          ? r.officialUrl
+          : `${BASE_URL}/releases/${r.id}`;
       const itemTitle = escapeXml(`${r.technology} ${r.version}`);
       const desc = escapeXml(r.tldr || r.description);
       const categories = [

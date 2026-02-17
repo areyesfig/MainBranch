@@ -22,7 +22,7 @@ function isAuthorized(request: NextRequest): boolean {
     return process.env.NODE_ENV !== "production";
   }
   const authHeader = request.headers.get("authorization") ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  const token = authHeader.match(/^Bearer\s+(\S+)$/)?.[1] ?? "";
   try {
     const secretBuf = Buffer.from(cronSecret, "utf8");
     const tokenBuf = Buffer.from(token, "utf8");
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     return Response.json(
       {
         error: "Error generando digest",
-        message: error instanceof Error ? error.message : "Error desconocido",
+        message: process.env.NODE_ENV !== "production" && error instanceof Error ? error.message : "Error interno",
       },
       { status: 500 }
     );
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     return Response.json(
       {
         error: "Error generando digest",
-        message: error instanceof Error ? error.message : "Error desconocido",
+        message: process.env.NODE_ENV !== "production" && error instanceof Error ? error.message : "Error interno",
       },
       { status: 500 }
     );
