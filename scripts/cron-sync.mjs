@@ -10,7 +10,8 @@
  *   node scripts/cron-sync.mjs
  */
 
-const APP_URL = process.env.APP_URL;
+const rawUrl = process.env.APP_URL;
+const APP_URL = rawUrl && !rawUrl.startsWith("http") ? `https://${rawUrl}` : rawUrl;
 const CRON_SECRET = process.env.CRON_SECRET;
 
 if (!APP_URL) {
