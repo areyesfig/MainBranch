@@ -53,6 +53,18 @@ To trigger sync for a single source: `curl "http://localhost:3000/api/sync?sourc
 - **GET /api/sync** — executes pipeline. Protected by `CRON_SECRET` Bearer token in production; no auth in dev. Runs via Vercel cron every 6 hours.
 - **POST /api/releases/explain** — AI explanation via OpenAI (requires `OPENAI_API_KEY`)
 
+### RSS Feed Endpoints (own feeds)
+
+The project exposes its own RSS feeds via Route Handlers in `app/feed*/`:
+
+- **GET /feed.xml** — all releases (max 50 items)
+- **GET /feed/breaking** — only releases with `breakingChange: true`
+- **GET /feed/high-impact** — releases with `impactScore ≥ 70`
+- **GET /feed/[technology]** — releases filtered by stack slug (e.g. `/feed/react`, `/feed/nodejs`)
+
+Shared builder: `lib/feed/buildFeed.ts` — `buildFeedXml()` + `FEED_HEADERS` + `escapeXml()`.
+Autodiscovery `<link rel="alternate">` tags are declared in `app/layout.tsx` via `metadata.alternates`.
+
 ### Database
 
 Neon Postgres with Prisma (pg adapter). Schema in `prisma/schema.prisma`. Key constraint: `@@unique([technology, version])` prevents duplicate releases. Array fields (features, tags, etc.) stored as JSON strings.

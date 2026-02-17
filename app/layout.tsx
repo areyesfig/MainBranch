@@ -19,6 +19,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Main Branch",
   description: "Mantente al día con los últimos lanzamientos y actualizaciones de tecnologías",
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/feed.xml", title: "Main Branch — Todos los Releases" },
+        { url: "/feed/breaking", title: "Main Branch — Breaking Changes" },
+        { url: "/feed/high-impact", title: "Main Branch — Alto Impacto" },
+      ],
+    },
+  },
 };
 
 export default function RootLayout({
