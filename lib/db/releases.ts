@@ -176,6 +176,25 @@ export async function getReleaseByIdFromDb(id: string): Promise<ReleaseNote | nu
 }
 
 /**
+ * Obtiene releases en un rango de fechas
+ */
+export async function getReleasesInRange(
+  startDate: Date,
+  endDate: Date
+): Promise<ReleaseNote[]> {
+  const releases = await prisma.release.findMany({
+    where: {
+      releaseDate: {
+        gte: startDate,
+        lt: endDate,
+      },
+    },
+    orderBy: { releaseDate: "desc" },
+  });
+  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+}
+
+/**
  * Cuenta releases en la BD
  */
 export async function getReleasesCount(): Promise<number> {
