@@ -18,7 +18,7 @@ export const RSS_SOURCES: RssSource[] = [
     technology: "Next.js",
     stack: "nextjs",
     category: "frontend",
-    enabled: true,
+    enabled: false, // Sin feed RSS — cubierto por github-nextjs-releases
     fetchInterval: 60,
     versionPattern: /(\d+\.\d+\.\d+)/,
   },
@@ -42,7 +42,7 @@ export const RSS_SOURCES: RssSource[] = [
     technology: "Vercel",
     stack: "vercel",
     category: "devops",
-    enabled: true,
+    enabled: false, // No relevante para el proyecto
     fetchInterval: 120,
   },
   {
@@ -75,7 +75,7 @@ export const RSS_SOURCES: RssSource[] = [
     technology: "Anthropic",
     stack: "claude",
     category: "llms",
-    enabled: true,
+    enabled: false, // Sin feed RSS — cubierto por SDK API sources
     fetchInterval: 120,
   },
   {
@@ -117,7 +117,7 @@ export const RSS_SOURCES: RssSource[] = [
     id: "go-blog",
     name: "Go Blog",
     type: "rss",
-    url: "https://go.dev/blog/feed.xml",
+    url: "https://go.dev/blog/feed.atom",
     technology: "Go",
     stack: "go",
     category: "backend",
@@ -129,7 +129,7 @@ export const RSS_SOURCES: RssSource[] = [
     id: "deno-blog",
     name: "Deno Blog",
     type: "rss",
-    url: "https://deno.com/blog/rss",
+    url: "https://deno.com/feed",
     technology: "Deno",
     stack: "deno",
     category: "backend",
@@ -142,7 +142,7 @@ export const RSS_SOURCES: RssSource[] = [
     id: "vue-blog",
     name: "Vue.js Blog",
     type: "rss",
-    url: "https://blog.vuejs.org/feed.xml",
+    url: "https://blog.vuejs.org/feed.rss",
     technology: "Vue",
     stack: "vue",
     category: "frontend",
@@ -154,7 +154,7 @@ export const RSS_SOURCES: RssSource[] = [
     id: "astro-blog",
     name: "Astro Blog",
     type: "rss",
-    url: "https://astro.build/blog/feed.xml",
+    url: "https://astro.build/rss.xml",
     technology: "Astro",
     stack: "astro",
     category: "frontend",
@@ -166,7 +166,7 @@ export const RSS_SOURCES: RssSource[] = [
     id: "nuxt-blog",
     name: "Nuxt Blog",
     type: "rss",
-    url: "https://nuxt.com/feed.xml",
+    url: "https://nuxt.com/blog/rss.xml",
     technology: "Nuxt",
     stack: "nuxt",
     category: "frontend",
@@ -240,14 +240,14 @@ export const RSS_SOURCES: RssSource[] = [
     technology: "Mistral AI",
     stack: "mistral",
     category: "llms",
-    enabled: true,
+    enabled: false, // Sin feed RSS disponible
     fetchInterval: 120,
   },
   {
     id: "meta-ai-blog",
-    name: "Meta AI Blog",
+    name: "Meta AI Research Blog",
     type: "rss",
-    url: "https://ai.meta.com/blog/rss/",
+    url: "https://engineering.fb.com/category/ai-research/feed/",
     technology: "Meta AI",
     stack: "llama",
     category: "llms",
@@ -262,7 +262,7 @@ export const RSS_SOURCES: RssSource[] = [
     technology: "Cohere",
     stack: "cohere",
     category: "llms",
-    enabled: true,
+    enabled: false, // Feed no es RSS válido
     fetchInterval: 120,
   },
 ];
