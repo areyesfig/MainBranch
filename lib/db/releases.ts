@@ -254,3 +254,18 @@ export async function getRecentReleaseCount(
     },
   });
 }
+
+/**
+ * Elimina releases con fecha anterior al umbral indicado.
+ * Devuelve cuántos registros se borraron.
+ */
+export async function deleteOldReleases(olderThanDays: number = 180): Promise<number> {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - olderThanDays);
+
+  const { count } = await prisma.release.deleteMany({
+    where: { releaseDate: { lt: cutoff } },
+  });
+
+  return count;
+}

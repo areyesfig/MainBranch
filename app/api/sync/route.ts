@@ -15,6 +15,7 @@ import { NextRequest } from "next/server";
 import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
+import { deleteOldReleases } from "@/lib/db/releases";
 
 export const dynamic = "force-dynamic";
 
@@ -107,12 +108,18 @@ export async function GET(request: NextRequest) {
 
     const { results, allReleases } = await runFullPipeline();
 
+    const deletedCount = await deleteOldReleases(180);
+    if (deletedCount > 0) {
+      console.log(`[sync] Limpieza: ${deletedCount} releases eliminados (>180 días)`);
+    }
+
     invalidateReleasesCache();
 
     return Response.json({
       success: true,
       totalReleases: allReleases.length,
       sourcesProcessed: results.length,
+      deletedOldReleases: deletedCount,
       results: results.map((r) => ({
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,
