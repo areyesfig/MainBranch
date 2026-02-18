@@ -256,6 +256,30 @@ export async function getRecentReleaseCount(
 }
 
 /**
+ * Obtiene releases creados recientemente (últimas `windowHours` horas)
+ * que sean de alto impacto: breakingChange=true o versión mayor (x.0.0).
+ * Usado por el bot de X para publicar solo novedades relevantes.
+ */
+export async function getRecentHighImpactReleases(
+  windowHours = 6.5
+): Promise<ReleaseNote[]> {
+  const since = new Date(Date.now() - windowHours * 60 * 60 * 1000);
+
+  const releases = await prisma.release.findMany({
+    where: {
+      createdAt: { gte: since },
+      OR: [
+        { breakingChange: true },
+        { version: { endsWith: ".0.0" } },
+      ],
+    },
+    orderBy: { releaseDate: "desc" },
+  });
+
+  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+}
+
+/**
  * Elimina releases con fecha anterior al umbral indicado.
  * Devuelve cuántos registros se borraron.
  */
