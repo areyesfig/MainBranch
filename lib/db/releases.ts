@@ -307,6 +307,36 @@ export async function markAsTweeted(id: string): Promise<void> {
 }
 
 /**
+ * Obtiene releases candidatos para publicar en Telegram.
+ * Mismo criterio que Twitter pero usa telegramPosted como flag.
+ */
+export async function getHighImpactReleasesToTelegram(): Promise<ReleaseNote[]> {
+  const releases = await prisma.release.findMany({
+    where: {
+      telegramPosted: false,
+      OR: [
+        { votes: { gte: VOTE_THRESHOLD } },
+        { breakingChange: true },
+        { version: { endsWith: ".0.0" } },
+      ],
+    },
+    orderBy: { releaseDate: "desc" },
+  });
+
+  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+}
+
+/**
+ * Marca un release como ya publicado en Telegram.
+ */
+export async function markAsTelegramPosted(id: string): Promise<void> {
+  await prisma.release.update({
+    where: { id },
+    data: { telegramPosted: true },
+  });
+}
+
+/**
  * Elimina releases con fecha anterior al umbral indicado.
  * Devuelve cuántos registros se borraron.
  */

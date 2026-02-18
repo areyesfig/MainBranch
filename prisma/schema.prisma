@@ -30,6 +30,7 @@ model Release {
   impactScore          Int?     @default(0)
   votes                Int      @default(0)
   tweeted              Boolean  @default(false)
+  telegramPosted       Boolean  @default(false)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 

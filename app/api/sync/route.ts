@@ -15,8 +15,9 @@ import { NextRequest } from "next/server";
 import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
-import { deleteOldReleases, getHighImpactReleasesToTweet } from "@/lib/db/releases";
+import { deleteOldReleases, getHighImpactReleasesToTweet, getHighImpactReleasesToTelegram } from "@/lib/db/releases";
 import { tweetHighImpactReleases } from "@/lib/bot/twitter";
+import { postHighImpactReleasesToTelegram } from "@/lib/bot/telegram";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,10 @@ export async function GET(request: NextRequest) {
     console.log(`[sync] Candidatos para tweet: ${highImpact.length}`);
     const tweetedCount = await tweetHighImpactReleases(highImpact);
 
+    const telegramCandidates = await getHighImpactReleasesToTelegram();
+    console.log(`[sync] Candidatos para Telegram: ${telegramCandidates.length}`);
+    const telegramCount = await postHighImpactReleasesToTelegram(telegramCandidates);
+
     invalidateReleasesCache();
 
     return Response.json({
@@ -126,6 +131,7 @@ export async function GET(request: NextRequest) {
       sourcesProcessed: results.length,
       deletedOldReleases: deletedCount,
       tweetedReleases: tweetedCount,
+      telegramPosts: telegramCount,
       results: results.map((r) => ({
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,
