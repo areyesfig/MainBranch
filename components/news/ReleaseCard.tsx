@@ -3,6 +3,9 @@ import { formatDate, sanitizeReleaseText } from "@/lib/utils";
 import { ExternalLink, AlertTriangle, Calendar, Tag, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import VoteButton from "@/components/news/VoteButton";
+import ShareButton from "@/components/news/ShareButton";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
 
 function ImpactBadge({ score }: { score?: number }) {
   if (score == null || score === 0) return null;
@@ -127,6 +130,12 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
             <span>{release.bugFixes.length} correcciones</span>
           )}
           <VoteButton releaseId={release.id} initialVotes={release.votes ?? 0} />
+          <ShareButton
+            title={release.tldr ?? ""}
+            url={`${SITE_URL}/releases/${release.id}`}
+            technology={release.technology}
+            version={release.version}
+          />
         </div>
         <Link
           href={`/releases/${release.id}`}

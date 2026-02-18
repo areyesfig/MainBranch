@@ -9,6 +9,7 @@ import MigrationGuide from "@/components/news/MigrationGuide";
 import EcosystemImpact from "@/components/news/EcosystemImpact";
 import VersionComparison from "@/components/news/VersionComparison";
 import AIReleaseExplanation from "@/components/news/AIReleaseExplanation";
+import ShareButton from "@/components/news/ShareButton";
 
 export const revalidate = 3600; // revalidar cada hora
 
@@ -130,6 +131,12 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
             <span className="rounded-md bg-blue-100 px-3 py-1 text-lg font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
               v{release.version}
             </span>
+            <ShareButton
+              title={release.tldr ?? `Notas de lanzamiento de ${release.technology} ${release.version}`}
+              url={`${SITE_URL}/releases/${release.id}`}
+              technology={release.technology}
+              version={release.version}
+            />
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Lanzado el {formatDate(release.releaseDate)}
