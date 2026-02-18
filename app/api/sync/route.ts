@@ -16,7 +16,7 @@ import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
 import { deleteOldReleases, getHighImpactReleasesToTweet } from "@/lib/db/releases";
-import { tweetHighImpactReleases } from "@/lib/bot/twitter";
+import { tweetHighImpactReleases } from "@/lib/bot/bluesky";
 
 export const dynamic = "force-dynamic";
 
