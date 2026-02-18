@@ -40,6 +40,17 @@ model Release {
   @@index([votes])
 }
 
+model Subscriber {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  token            String    @unique @default(cuid()) // confirm + unsubscribe
+  confirmedAt      DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([email])
+  @@index([token])
+}
+
 model Digest {
   id            String   @id @default(cuid())
   period        String   // "weekly" | "monthly"

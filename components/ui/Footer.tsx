@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Github, Twitter, Mail } from "lucide-react";
+import { Github, Twitter } from "lucide-react";
+import NewsletterForm from "@/components/ui/NewsletterForm";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -61,12 +62,16 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Social Section */}
+            {/* Newsletter Section */}
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                Síguenos
+                Newsletter semanal
               </h4>
-              <div className="flex space-x-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Los releases más relevantes directo a tu email, cada semana.
+              </p>
+              <NewsletterForm />
+              <div className="flex space-x-4 pt-2">
                 <a
                   href="https://github.com"
                   target="_blank"
@@ -84,13 +89,6 @@ export default function Footer() {
                   aria-label="Twitter"
                 >
                   <Twitter className="h-5 w-5" />
-                </a>
-                <a
-                  href="mailto:contact@mainbranch.dev"
-                  className="text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                  aria-label="Email"
-                >
-                  <Mail className="h-5 w-5" />
                 </a>
               </div>
             </div>
