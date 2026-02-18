@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+
 export const metadata: Metadata = {
   title: "Releases",
   description:
@@ -8,9 +10,9 @@ export const metadata: Metadata = {
     title: "Releases — Main Branch",
     description:
       "Últimos lanzamientos de las principales tecnologías del ecosistema JavaScript, TypeScript e IA.",
-    url: "https://mainbranch.cl/releases",
+    url: `${SITE_URL}/releases`,
   },
-  alternates: { canonical: "https://mainbranch.cl/releases" },
+  alternates: { canonical: `${SITE_URL}/releases` },
 };
 
 export const revalidate = 3600; // revalidar cada hora

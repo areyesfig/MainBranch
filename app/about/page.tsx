@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Code, Zap, Target, Heart } from "lucide-react";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+
 export const metadata: Metadata = {
   title: "Acerca de",
   description:
@@ -8,9 +10,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Acerca de — Main Branch",
     description: "Conoce qué es Main Branch y cómo funciona el agregador de releases tech.",
-    url: "https://mainbranch.cl/about",
+    url: `${SITE_URL}/about`,
   },
-  alternates: { canonical: "https://mainbranch.cl/about" },
+  alternates: { canonical: `${SITE_URL}/about` },
 };
 
 export default function AboutPage() {

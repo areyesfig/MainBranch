@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://mainbranch.cl";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
 const SITE_DESCRIPTION =
   "Mantente al día con los últimos releases de React, Next.js, TypeScript, AI y más. Changelogs, breaking changes y guías de migración en un solo lugar.";
 

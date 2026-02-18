@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+
 export const metadata: Metadata = {
   title: "Timeline de Releases",
   description:
@@ -7,9 +9,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Timeline de Releases — Main Branch",
     description: "Historial cronológico de lanzamientos del ecosistema tech.",
-    url: "https://mainbranch.cl/timeline",
+    url: `${SITE_URL}/timeline`,
   },
-  alternates: { canonical: "https://mainbranch.cl/timeline" },
+  alternates: { canonical: `${SITE_URL}/timeline` },
 };
 
 export const revalidate = 3600; // revalidar cada hora
