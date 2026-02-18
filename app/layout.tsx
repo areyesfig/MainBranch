@@ -16,10 +16,53 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://mainbranch.cl";
+const SITE_DESCRIPTION =
+  "Mantente al día con los últimos releases de React, Next.js, TypeScript, AI y más. Changelogs, breaking changes y guías de migración en un solo lugar.";
+
 export const metadata: Metadata = {
-  title: "Main Branch",
-  description: "Mantente al día con los últimos lanzamientos y actualizaciones de tecnologías",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Main Branch — Releases y Changelogs Tech",
+    template: "%s — Main Branch",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "releases",
+    "changelogs",
+    "next.js",
+    "react",
+    "typescript",
+    "node.js",
+    "ai",
+    "llm",
+    "breaking changes",
+    "tech updates",
+    "developer news",
+  ],
+  authors: [{ name: "Main Branch", url: SITE_URL }],
+  creator: "Main Branch",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CL",
+    url: SITE_URL,
+    siteName: "Main Branch",
+    title: "Main Branch — Releases y Changelogs Tech",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Main Branch — Releases y Changelogs Tech",
+    description: SITE_DESCRIPTION,
+    creator: "@mainbranch_dev",
+  },
   alternates: {
+    canonical: SITE_URL,
     types: {
       "application/rss+xml": [
         { url: "/feed.xml", title: "Main Branch — Todos los Releases" },

@@ -1,4 +1,17 @@
+import type { Metadata } from "next";
 import { Code, Zap, Target, Heart } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Acerca de",
+  description:
+    "Main Branch es un agregador de releases tech que recopila changelogs de React, Next.js, TypeScript, Node.js, IA y más de 30 tecnologías en un solo lugar.",
+  openGraph: {
+    title: "Acerca de — Main Branch",
+    description: "Conoce qué es Main Branch y cómo funciona el agregador de releases tech.",
+    url: "https://mainbranch.cl/about",
+  },
+  alternates: { canonical: "https://mainbranch.cl/about" },
+};
 
 export default function AboutPage() {
   return (

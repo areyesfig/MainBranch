@@ -1,3 +1,17 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Timeline de Releases",
+  description:
+    "Visualiza cronológicamente todos los lanzamientos de tecnologías. Navega por el historial de releases de React, Next.js, TypeScript y más.",
+  openGraph: {
+    title: "Timeline de Releases — Main Branch",
+    description: "Historial cronológico de lanzamientos del ecosistema tech.",
+    url: "https://mainbranch.cl/timeline",
+  },
+  alternates: { canonical: "https://mainbranch.cl/timeline" },
+};
+
 export const revalidate = 3600; // revalidar cada hora
 
 import Link from "next/link";

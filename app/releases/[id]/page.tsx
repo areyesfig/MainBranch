@@ -16,25 +16,43 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+const SITE_URL = "https://mainbranch.cl";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const release = await getReleaseById(id);
 
   if (!release) {
-    return { title: "Release no encontrado — Main Branch" };
+    return { title: "Release no encontrado" };
   }
 
-  const title = `${release.technology} v${release.version} — Main Branch`;
-  const description = release.tldr || `Notas de lanzamiento de ${release.technology} ${release.version}`;
+  const title = `${release.technology} v${release.version}`;
+  const description = release.tldr
+    ? release.tldr.slice(0, 155)
+    : `Notas de lanzamiento de ${release.technology} ${release.version}`;
+  const url = `${SITE_URL}/releases/${id}`;
+  const publishedTime =
+    release.releaseDate instanceof Date
+      ? release.releaseDate.toISOString()
+      : release.releaseDate;
 
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: {
-      title,
+      title: `${title} — Main Branch`,
       description,
       type: "article",
-      publishedTime: release.releaseDate instanceof Date ? release.releaseDate.toISOString() : release.releaseDate,
+      url,
+      publishedTime: publishedTime as string,
+      tags: release.tags ?? [],
+      section: release.category ?? "Technology",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} — Main Branch`,
+      description,
     },
   };
 }
@@ -66,8 +84,33 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
       codeExample: step.codeExample ? safe(step.codeExample, 3000) : undefined,
     })) ?? [];
 
+  const releaseDate =
+    release.releaseDate instanceof Date
+      ? release.releaseDate.toISOString()
+      : release.releaseDate;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: `${release.technology} v${release.version} Release Notes`,
+    description: release.tldr?.slice(0, 155),
+    datePublished: releaseDate,
+    dateModified: releaseDate,
+    url: `${SITE_URL}/releases/${release.id}`,
+    author: { "@type": "Organization", name: "Main Branch", url: SITE_URL },
+    publisher: { "@type": "Organization", name: "Main Branch", url: SITE_URL },
+    keywords: [release.technology, release.version, ...(release.tags ?? [])].join(", "),
+    ...(release.breakingChange && {
+      about: { "@type": "Thing", name: "Breaking Changes" },
+    }),
+  };
+
   return (
     <div className="bg-gray-50 dark:bg-gray-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
