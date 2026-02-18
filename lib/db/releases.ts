@@ -260,28 +260,24 @@ const VOTE_THRESHOLD = 10;
 
 /**
  * Obtiene releases candidatos para tweetear:
- *   - tweeted = false (nunca publicados)
+ *   - tweeted = false (nunca publicados — deduplicación real)
  *   - votes >= VOTE_THRESHOLD (comunidad los validó), O
- *   - breakingChange = true / versión mayor creada en las últimas 6.5h (auto-detectado)
+ *   - breakingChange = true / versión mayor (x.0.0)
+ *
+ * Sin restricción de fecha: tweeted=false ya previene duplicados.
+ * Ordenado por releaseDate DESC para publicar siempre lo más reciente primero.
  */
 export async function getHighImpactReleasesToTweet(): Promise<ReleaseNote[]> {
-  const since = new Date(Date.now() - 6.5 * 60 * 60 * 1000);
-
   const releases = await prisma.release.findMany({
     where: {
       tweeted: false,
       OR: [
         { votes: { gte: VOTE_THRESHOLD } },
-        {
-          createdAt: { gte: since },
-          OR: [
-            { breakingChange: true },
-            { version: { endsWith: ".0.0" } },
-          ],
-        },
+        { breakingChange: true },
+        { version: { endsWith: ".0.0" } },
       ],
     },
-    orderBy: { votes: "desc" },
+    orderBy: { releaseDate: "desc" },
   });
 
   return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
