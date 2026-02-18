@@ -156,4 +156,9 @@ export interface ReleaseNote {
    * Puntuación de impacto del release (0-100)
    */
   impactScore?: number;
+
+  /**
+   * Votos de la comunidad (se acumulan vía /api/releases/[id]/vote)
+   */
+  votes?: number;
 }

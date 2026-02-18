@@ -49,6 +49,7 @@ function dbToReleaseNote(
     estimatedMigrationTime: r.estimatedMigrationTime ?? undefined,
     migrationComplexity: r.migrationComplexity as ReleaseNote["migrationComplexity"] ?? undefined,
     impactScore: r.impactScore ?? undefined,
+    votes: r.votes,
   };
 }
 
@@ -255,28 +256,58 @@ export async function getRecentReleaseCount(
   });
 }
 
+const VOTE_THRESHOLD = 10;
+
 /**
- * Obtiene releases creados recientemente (últimas `windowHours` horas)
- * que sean de alto impacto: breakingChange=true o versión mayor (x.0.0).
- * Usado por el bot de X para publicar solo novedades relevantes.
+ * Obtiene releases candidatos para tweetear:
+ *   - tweeted = false (nunca publicados)
+ *   - votes >= VOTE_THRESHOLD (comunidad los validó), O
+ *   - breakingChange = true / versión mayor creada en las últimas 6.5h (auto-detectado)
  */
-export async function getRecentHighImpactReleases(
-  windowHours = 6.5
-): Promise<ReleaseNote[]> {
-  const since = new Date(Date.now() - windowHours * 60 * 60 * 1000);
+export async function getHighImpactReleasesToTweet(): Promise<ReleaseNote[]> {
+  const since = new Date(Date.now() - 6.5 * 60 * 60 * 1000);
 
   const releases = await prisma.release.findMany({
     where: {
-      createdAt: { gte: since },
+      tweeted: false,
       OR: [
-        { breakingChange: true },
-        { version: { endsWith: ".0.0" } },
+        { votes: { gte: VOTE_THRESHOLD } },
+        {
+          createdAt: { gte: since },
+          OR: [
+            { breakingChange: true },
+            { version: { endsWith: ".0.0" } },
+          ],
+        },
       ],
     },
-    orderBy: { releaseDate: "desc" },
+    orderBy: { votes: "desc" },
   });
 
   return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+}
+
+/**
+ * Incrementa los votos de un release en 1 (operación atómica).
+ * Devuelve el nuevo total de votos.
+ */
+export async function incrementVotes(id: string): Promise<number> {
+  const updated = await prisma.release.update({
+    where: { id },
+    data: { votes: { increment: 1 } },
+    select: { votes: true },
+  });
+  return updated.votes;
+}
+
+/**
+ * Marca un release como ya publicado en X.
+ */
+export async function markAsTweeted(id: string): Promise<void> {
+  await prisma.release.update({
+    where: { id },
+    data: { tweeted: true },
+  });
 }
 
 /**

@@ -15,7 +15,7 @@ import { NextRequest } from "next/server";
 import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
-import { deleteOldReleases, getRecentHighImpactReleases } from "@/lib/db/releases";
+import { deleteOldReleases, getHighImpactReleasesToTweet } from "@/lib/db/releases";
 import { tweetHighImpactReleases } from "@/lib/bot/twitter";
 
 export const dynamic = "force-dynamic";
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       console.log(`[sync] Limpieza: ${deletedCount} releases eliminados (>180 días)`);
     }
 
-    const highImpact = await getRecentHighImpactReleases();
+    const highImpact = await getHighImpactReleasesToTweet();
     const tweetedCount = await tweetHighImpactReleases(highImpact);
 
     invalidateReleasesCache();

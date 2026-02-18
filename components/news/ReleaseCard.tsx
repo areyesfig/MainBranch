@@ -2,6 +2,7 @@ import { ReleaseNote } from "@/types/release";
 import { formatDate, sanitizeReleaseText } from "@/lib/utils";
 import { ExternalLink, AlertTriangle, Calendar, Tag, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import VoteButton from "@/components/news/VoteButton";
 
 function ImpactBadge({ score }: { score?: number }) {
   if (score == null || score === 0) return null;
@@ -118,15 +119,14 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
 
       {/* Footer */}
       <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-800">
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
           {release.improvements && release.improvements.length > 0 && (
-            <span className="mr-3">
-              {release.improvements.length} mejoras
-            </span>
+            <span>{release.improvements.length} mejoras</span>
           )}
           {release.bugFixes && release.bugFixes.length > 0 && (
             <span>{release.bugFixes.length} correcciones</span>
           )}
+          <VoteButton releaseId={release.id} initialVotes={release.votes ?? 0} />
         </div>
         <Link
           href={`/releases/${release.id}`}
