@@ -115,6 +115,7 @@ export async function GET(request: NextRequest) {
     }
 
     const highImpact = await getHighImpactReleasesToTweet();
+    console.log(`[sync] Candidatos para tweet: ${highImpact.length}`);
     const tweetedCount = await tweetHighImpactReleases(highImpact);
 
     invalidateReleasesCache();

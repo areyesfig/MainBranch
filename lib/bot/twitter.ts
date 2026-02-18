@@ -53,7 +53,10 @@ function buildTweetText(release: ReleaseNote): string {
 export async function tweetRelease(release: ReleaseNote): Promise<boolean> {
   const text = buildTweetText(release);
 
-  if (process.env.NODE_ENV !== "production") {
+  const isDev = process.env.NODE_ENV !== "production";
+  console.log(`[bot/twitter] NODE_ENV=${process.env.NODE_ENV}, release=${release.technology} ${release.version}`);
+
+  if (isDev) {
     console.log(
       `[bot/twitter] MODO DEV — tweet simulado:\n${text}\n${"─".repeat(40)}`
     );
@@ -62,7 +65,10 @@ export async function tweetRelease(release: ReleaseNote): Promise<boolean> {
 
   const client = buildClient();
   if (!client) {
-    console.warn("[bot/twitter] Credenciales X no configuradas — omitiendo tweet.");
+    const missing = ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"]
+      .filter((k) => !process.env[k])
+      .join(", ");
+    console.warn(`[bot/twitter] Credenciales faltantes: ${missing}`);
     return false;
   }
 
