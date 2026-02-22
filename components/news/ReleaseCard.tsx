@@ -2,35 +2,42 @@ import { ReleaseNote } from "@/types/release";
 import { formatDate, sanitizeReleaseText } from "@/lib/utils";
 import { ExternalLink, AlertTriangle, Calendar, Tag, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import Badge from "@/components/ui/Badge";
 import VoteButton from "@/components/news/VoteButton";
 import ShareButton from "@/components/news/ShareButton";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+
+const CATEGORY_BORDER: Record<string, string> = {
+  frontend: "border-l-blue-500",
+  backend: "border-l-green-500",
+  "ai-ml": "border-l-purple-500",
+  llms: "border-l-violet-500",
+  devops: "border-l-orange-500",
+  mobile: "border-l-cyan-500",
+};
 
 function ImpactBadge({ score }: { score?: number }) {
   if (score == null || score === 0) return null;
 
   if (score >= 70) {
     return (
-      <span className="flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800 dark:bg-red-900 dark:text-red-200">
-        <TrendingUp className="h-3 w-3" />
+      <Badge variant="red" icon={<TrendingUp className="h-3 w-3" />}>
         Alto impacto
-      </span>
+      </Badge>
     );
   }
   if (score >= 40) {
     return (
-      <span className="flex items-center gap-1 rounded-md bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-        <TrendingUp className="h-3 w-3" />
+      <Badge variant="yellow" icon={<TrendingUp className="h-3 w-3" />}>
         Medio impacto
-      </span>
+      </Badge>
     );
   }
   return (
-    <span className="flex items-center gap-1 rounded-md bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
-      <TrendingUp className="h-3 w-3" />
+    <Badge variant="green" icon={<TrendingUp className="h-3 w-3" />}>
       Bajo impacto
-    </span>
+    </Badge>
   );
 }
 
@@ -38,29 +45,26 @@ interface ReleaseCardProps {
   release: ReleaseNote;
 }
 
-/**
- * Componente para mostrar una tarjeta de lanzamiento
- */
 export default function ReleaseCard({ release }: ReleaseCardProps) {
   const isBreakingChange = release.breakingChange;
+  const borderColor = CATEGORY_BORDER[release.category ?? ""] ?? "border-l-gray-300 dark:border-l-gray-700";
 
   return (
-    <article className="group relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900">
+    <article
+      className={`group relative rounded-lg border border-gray-200 border-l-4 ${borderColor} bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900`}
+    >
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
               {release.technology}
             </h3>
-            <span className="rounded-md bg-blue-100 px-2 py-1 text-sm font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              v{release.version}
-            </span>
+            <Badge variant="blue" size="sm">v{release.version}</Badge>
             {isBreakingChange && (
-              <span className="flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800 dark:bg-red-900 dark:text-red-200">
-                <AlertTriangle className="h-3 w-3" />
+              <Badge variant="red" icon={<AlertTriangle className="h-3 w-3" />}>
                 Breaking Changes
-              </span>
+              </Badge>
             )}
             <ImpactBadge score={release.impactScore} />
           </div>
@@ -75,7 +79,7 @@ export default function ReleaseCard({ release }: ReleaseCardProps) {
         </div>
       </div>
 
-      {/* TLDR: texto limpio y contenido en el recuadro */}
+      {/* TLDR */}
       <p className="mb-4 line-clamp-4 break-words text-gray-700 dark:text-gray-300">
         {sanitizeReleaseText(release.tldr)}
       </p>

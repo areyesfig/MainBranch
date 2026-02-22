@@ -120,3 +120,21 @@ export async function invalidateAllReleaseCache(): Promise<void> {
     // Silencioso — la invalidación es best-effort
   }
 }
+
+/**
+ * Elimina todas las claves mb:news:* de Redis.
+ * Se llama tras un sync o traducción para servir datos frescos.
+ */
+export async function invalidateAllNewsCache(): Promise<void> {
+  const redis = getClient();
+  if (!redis) return;
+  try {
+    const keys = await redis.keys("mb:news:*");
+    if (keys.length > 0) {
+      await redis.del(...keys);
+      console.log(`[Redis] Invalidados ${keys.length} news keys`);
+    }
+  } catch {
+    // Silencioso — la invalidación es best-effort
+  }
+}

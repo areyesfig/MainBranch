@@ -6,11 +6,12 @@ import { Share2, Check, Link as LinkIcon } from "lucide-react";
 interface ShareButtonProps {
   title: string;
   url: string;
-  technology: string;
-  version: string;
+  technology?: string;
+  version?: string;
+  shareText?: string;
 }
 
-export default function ShareButton({ title, url, technology, version }: ShareButtonProps) {
+export default function ShareButton({ title, url, technology, version, shareText: shareTextProp }: ShareButtonProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -26,7 +27,11 @@ export default function ShareButton({ title, url, technology, version }: ShareBu
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  const shareText = `${technology} v${version} — ${title}`;
+  const shareText = shareTextProp
+    ? shareTextProp
+    : technology && version
+      ? `${technology} v${version} — ${title}`
+      : title;
 
   function shareX() {
     window.open(
@@ -82,7 +87,7 @@ export default function ShareButton({ title, url, technology, version }: ShareBu
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           <button onClick={shareX} className={itemClass}>
             <XIcon />
             Compartir en X

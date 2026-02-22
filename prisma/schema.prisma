@@ -68,3 +68,28 @@ model Digest {
   @@index([period])
   @@index([endDate])
 }
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  sourceId    String
+  title       String
+  summary     String
+  titleEs     String?
+  summaryEs   String?
+  content     String   @default("")
+  author      String?
+  sourceUrl   String
+  sourceName  String
+  topic       String?
+  tags        String?
+  imageUrl    String?
+  votes       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime
+
+  @@unique([title, sourceName])
+  @@index([topic])
+  @@index([publishedAt])
+  @@index([votes])
+}

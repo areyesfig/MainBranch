@@ -13,9 +13,12 @@
 import { timingSafeEqual } from "crypto";
 import { NextRequest } from "next/server";
 import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
+import { runFullNewsPipeline } from "@/lib/pipeline/news";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
+import { invalidateNewsCache } from "@/lib/data/news";
 import { deleteOldReleases, getHighImpactReleasesToTweet, getHighImpactReleasesToTelegram } from "@/lib/db/releases";
+import { deleteOldNews } from "@/lib/db/news";
 import { tweetHighImpactReleases } from "@/lib/bot/twitter";
 import { postHighImpactReleasesToTelegram } from "@/lib/bot/telegram";
 
@@ -110,9 +113,17 @@ export async function GET(request: NextRequest) {
 
     const { results, allReleases } = await runFullPipeline();
 
+    // Pipeline de noticias AI
+    const newsResult = await runFullNewsPipeline();
+
     const deletedCount = await deleteOldReleases(180);
     if (deletedCount > 0) {
       console.log(`[sync] Limpieza: ${deletedCount} releases eliminados (>180 días)`);
+    }
+
+    const deletedNews = await deleteOldNews(90);
+    if (deletedNews > 0) {
+      console.log(`[sync] Limpieza: ${deletedNews} noticias eliminadas (>90 días)`);
     }
 
     const highImpact = await getHighImpactReleasesToTweet();
@@ -124,17 +135,26 @@ export async function GET(request: NextRequest) {
     const telegramCount = await postHighImpactReleasesToTelegram(telegramCandidates);
 
     invalidateReleasesCache();
+    invalidateNewsCache();
 
     return Response.json({
       success: true,
       totalReleases: allReleases.length,
+      totalNewsArticles: newsResult.totalArticles,
       sourcesProcessed: results.length,
       deletedOldReleases: deletedCount,
+      deletedOldNews: deletedNews,
       tweetedReleases: tweetedCount,
       telegramPosts: telegramCount,
       results: results.map((r) => ({
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,
+        success: r.errors.length === 0,
+        errors: r.errors,
+      })),
+      newsResults: newsResult.results.map((r) => ({
+        sourceId: r.sourceId,
+        articlesCount: r.articlesCount,
         success: r.errors.length === 0,
         errors: r.errors,
       })),

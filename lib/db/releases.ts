@@ -111,7 +111,7 @@ export async function upsertReleases(
   sourceId: string
 ): Promise<{ created: number; updated: number; errors: string[] }> {
   let created = 0;
-  let updated = 0;
+  const updated = 0;
   const errors: string[] = [];
 
   for (const release of releases) {

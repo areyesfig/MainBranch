@@ -16,8 +16,8 @@ export default function Footer() {
                 Main Branch
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Mantente al día con los últimos lanzamientos y actualizaciones
-                de las tecnologías más importantes del ecosistema de desarrollo.
+                Tu hub centralizado de noticias, releases y tendencias en tecnología.
+                Todo lo que necesitas del ecosistema dev, en un solo lugar.
               </p>
             </div>
 
@@ -40,15 +40,23 @@ export default function Footer() {
                     href="/releases"
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Lanzamientos
+                    Releases
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/notifications"
+                    href="/noticias"
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Notificaciones
+                    Noticias AI
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/digest"
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    Digests
                   </Link>
                 </li>
                 <li>
@@ -98,7 +106,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-200 py-6 dark:border-gray-800">
           <div className="flex flex-col items-center justify-between space-y-4 text-sm text-gray-600 dark:text-gray-400 md:flex-row md:space-y-0">
-            <p>© {currentYear} Main Branch. Todos los derechos reservados.</p>
+            <p>&copy; {currentYear} Main Branch. Todos los derechos reservados.</p>
             <div className="flex space-x-6">
               <Link
                 href="/privacy"

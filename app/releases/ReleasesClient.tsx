@@ -55,8 +55,8 @@ export default function ReleasesClient({
   useEffect(() => {
     const category = searchParams.get("category");
     const stack = searchParams.get("stack");
-    if (category) setSelectedCategory(category);
-    if (stack) setSelectedStack(stack);
+    if (category) queueMicrotask(() => setSelectedCategory(category));
+    if (stack) queueMicrotask(() => setSelectedStack(stack));
   }, [searchParams]);
 
   const filteredReleases = useMemo(() => {

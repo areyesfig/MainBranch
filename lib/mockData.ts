@@ -1,4 +1,5 @@
 import { ReleaseNote } from "@/types/release";
+import { STACK_LABELS } from "@/lib/stackLabels";
 
 /**
  * Datos mock para desarrollo y pruebas
@@ -358,25 +359,6 @@ revalidatePath( → await revalidatePath(`,
     category: "llms",
   },
   {
-    id: "10",
-    technology: "Llama",
-    version: "3.2",
-    releaseDate: new Date("2024-10-22"),
-    tldr: "Meta lanza Llama 3.2 con modelos desde 1B hasta 70B parámetros, incluyendo variante vision-language.",
-    description: "Llama 3.2 democratiza el acceso a modelos de IA con versiones desde 1B parámetros optimizadas para edge, hasta 70B para servidor. Incluye Llama 3.2 Vision.",
-    breakingChange: false,
-    features: [
-      "Modelos 1B, 3B, 11B, 70B",
-      "Llama 3.2 Vision (11B)",
-      "Optimizado para inferencia en edge",
-      "Licencia Apache 2.0"
-    ],
-    officialUrl: "https://ai.meta.com/blog/llama-3-2/",
-    tags: ["ai", "llm", "meta", "open-source"],
-    stack: "llama",
-    category: "llms",
-  },
-  {
     id: "11",
     technology: "GPT-4o",
     version: "2024-11",
@@ -528,9 +510,10 @@ revalidatePath( → await revalidatePath(`,
  */
 export function getUniqueStacks(releases?: ReleaseNote[]): string[] {
   const source = releases ?? mockReleases;
+  const validStacks = new Set(Object.keys(STACK_LABELS));
   const stacks = source
     .map(release => release.stack)
-    .filter((stack): stack is string => stack !== undefined);
+    .filter((stack): stack is string => stack !== undefined && validStacks.has(stack));
   return Array.from(new Set(stacks));
 }
 

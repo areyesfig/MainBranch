@@ -30,8 +30,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setSelectedStacksState(getNotificationStacks());
-    setMounted(true);
+    queueMicrotask(() => {
+      setSelectedStacksState(getNotificationStacks());
+      setMounted(true);
+    });
   }, []);
 
   const setSelectedStacks = useCallback((stacks: string[]) => {

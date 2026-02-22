@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getReleases, getReleasesByCategory, getReleasesByStack } from "@/lib/data/releases";
+import { getReleases, getReleasesByCategory } from "@/lib/data/releases";
 
 /**
  * Genera un feed RSS personalizado por stack o categoría

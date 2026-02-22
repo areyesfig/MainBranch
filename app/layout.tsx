@@ -18,12 +18,12 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
 const SITE_DESCRIPTION =
-  "Mantente al día con los últimos releases de React, Next.js, TypeScript, AI y más. Changelogs, breaking changes y guías de migración en un solo lugar.";
+  "Tu fuente centralizada de noticias, releases y tendencias en tecnología. Changelogs, breaking changes, noticias AI y guías de migración en un solo lugar.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Main Branch — Releases y Changelogs Tech",
+    default: "Main Branch — Hub de Tecnología",
     template: "%s — Main Branch",
   },
   description: SITE_DESCRIPTION,
@@ -36,6 +36,8 @@ export const metadata: Metadata = {
     "node.js",
     "ai",
     "llm",
+    "noticias ai",
+    "hub tecnología",
     "breaking changes",
     "tech updates",
     "developer news",
@@ -52,12 +54,12 @@ export const metadata: Metadata = {
     locale: "es_CL",
     url: SITE_URL,
     siteName: "Main Branch",
-    title: "Main Branch — Releases y Changelogs Tech",
+    title: "Main Branch — Hub de Tecnología",
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Main Branch — Releases y Changelogs Tech",
+    title: "Main Branch — Hub de Tecnología",
     description: SITE_DESCRIPTION,
     creator: "@mainbranch_dev",
   },

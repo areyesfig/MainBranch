@@ -46,7 +46,7 @@ export default function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
             </div>
 
             <div className="space-y-4">
-              {groupedByYear[year].map((release, index) => (
+              {groupedByYear[year].map((release) => (
                 <Link
                   key={release.id}
                   href={`/releases/${release.id}`}

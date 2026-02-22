@@ -13,7 +13,7 @@ import { transformRssItem } from "./transformers/toReleaseNote";
 import { transformApiItem } from "./transformers/toReleaseNote";
 import { upsertReleases, getRecentReleaseCount } from "@/lib/db/releases";
 import { calculateImpactScore } from "./scoring/impactScore";
-import type { DataSource, RawFetchResult, PipelineResult } from "@/types/sources";
+import type { DataSource, PipelineResult } from "@/types/sources";
 import type { ReleaseNote } from "@/types/release";
 
 /**
@@ -28,8 +28,6 @@ export async function runPipelineForSource(
   let releases: ReleaseNote[] = [];
 
   try {
-    let rawResult: RawFetchResult;
-
     if (source.type === "scraping") {
       errors.push("Scraping no implementado - requiere Puppeteer/Playwright");
       return {
@@ -44,7 +42,7 @@ export async function runPipelineForSource(
 
     console.log(`[pipeline] Fetching ${source.id} (${source.type})...`);
     const fetcher = getFetcher(source);
-    rawResult = await fetcher.fetch(source);
+    const rawResult = await fetcher.fetch(source);
 
     if (source.type === "rss") {
       releases = rawResult.items.map((item, i) =>
