@@ -6,6 +6,7 @@ export interface NewsArticle {
   titleEs?: string;
   summaryEs?: string;
   content: string;
+  contentEs?: string;
   author?: string;
   sourceUrl: string;
   sourceName: string;

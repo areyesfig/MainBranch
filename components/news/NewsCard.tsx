@@ -72,7 +72,7 @@ export default function NewsCard({ article, lang = "es" }: NewsCardProps) {
         </div>
 
         {/* Summary */}
-        <p className="mb-4 line-clamp-3 text-sm text-gray-700 dark:text-gray-300">
+        <p className="mb-4 text-sm text-gray-700 line-clamp-3 dark:text-gray-300">
           {displaySummary}
         </p>
 

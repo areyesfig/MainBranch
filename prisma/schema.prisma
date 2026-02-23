@@ -77,6 +77,7 @@ model NewsArticle {
   titleEs     String?
   summaryEs   String?
   content     String   @default("")
+  contentEs   String?
   author      String?
   sourceUrl   String
   sourceName  String

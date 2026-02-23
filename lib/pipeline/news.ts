@@ -47,13 +47,16 @@ export async function runNewsPipelineForSource(
     if (apiKey && articles.length > 0) {
       for (const article of articles) {
         try {
-          const { titleEs, summaryEs } = await translateNewsArticle(
+          const { titleEs, summaryEs, contentEs } = await translateNewsArticle(
             article.title,
             article.summary,
-            apiKey
+            apiKey,
+            undefined,
+            article.content || undefined
           );
           article.titleEs = titleEs;
           article.summaryEs = summaryEs;
+          if (contentEs) article.contentEs = contentEs;
         } catch (err) {
           console.warn(
             `[news-pipeline] Traducción falló para "${article.title.slice(0, 50)}":`,

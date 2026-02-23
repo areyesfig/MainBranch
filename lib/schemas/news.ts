@@ -15,6 +15,7 @@ export const newsArticleForDbSchema = z.object({
   titleEs: z.string().nullable().optional(),
   summaryEs: z.string().nullable().optional(),
   content: z.string().default(""),
+  contentEs: z.string().nullable().optional(),
   author: z.string().nullable().optional(),
   sourceUrl: z.string().url("sourceUrl debe ser una URL válida"),
   sourceName: z.string().min(1, "sourceName es requerido"),
