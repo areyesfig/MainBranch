@@ -17,10 +17,8 @@ import { runFullNewsPipeline } from "@/lib/pipeline/news";
 import { getActiveSources } from "@/lib/sources/config";
 import { invalidateReleasesCache } from "@/lib/data/releases";
 import { invalidateNewsCache } from "@/lib/data/news";
-import { deleteOldReleases, getHighImpactReleasesToTweet, getHighImpactReleasesToTelegram } from "@/lib/db/releases";
+import { deleteOldReleases } from "@/lib/db/releases";
 import { deleteOldNews } from "@/lib/db/news";
-import { tweetHighImpactReleases } from "@/lib/bot/twitter";
-import { postHighImpactReleasesToTelegram } from "@/lib/bot/telegram";
 
 export const dynamic = "force-dynamic";
 
@@ -126,14 +124,6 @@ export async function GET(request: NextRequest) {
       console.log(`[sync] Limpieza: ${deletedNews} noticias eliminadas (>90 días)`);
     }
 
-    const highImpact = await getHighImpactReleasesToTweet();
-    console.log(`[sync] Candidatos para tweet: ${highImpact.length}`);
-    const tweetedCount = await tweetHighImpactReleases(highImpact);
-
-    const telegramCandidates = await getHighImpactReleasesToTelegram();
-    console.log(`[sync] Candidatos para Telegram: ${telegramCandidates.length}`);
-    const telegramCount = await postHighImpactReleasesToTelegram(telegramCandidates);
-
     invalidateReleasesCache();
     invalidateNewsCache();
 
@@ -144,8 +134,6 @@ export async function GET(request: NextRequest) {
       sourcesProcessed: results.length,
       deletedOldReleases: deletedCount,
       deletedOldNews: deletedNews,
-      tweetedReleases: tweetedCount,
-      telegramPosts: telegramCount,
       results: results.map((r) => ({
         sourceId: r.sourceId,
         releasesCount: r.transformedCount,

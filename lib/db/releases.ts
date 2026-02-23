@@ -256,33 +256,6 @@ export async function getRecentReleaseCount(
   });
 }
 
-const VOTE_THRESHOLD = 10;
-
-/**
- * Obtiene releases candidatos para tweetear:
- *   - tweeted = false (nunca publicados — deduplicación real)
- *   - votes >= VOTE_THRESHOLD (comunidad los validó), O
- *   - breakingChange = true / versión mayor (x.0.0)
- *
- * Sin restricción de fecha: tweeted=false ya previene duplicados.
- * Ordenado por releaseDate DESC para publicar siempre lo más reciente primero.
- */
-export async function getHighImpactReleasesToTweet(): Promise<ReleaseNote[]> {
-  const releases = await prisma.release.findMany({
-    where: {
-      tweeted: false,
-      OR: [
-        { votes: { gte: VOTE_THRESHOLD } },
-        { breakingChange: true },
-        { version: { endsWith: ".0.0" } },
-      ],
-    },
-    orderBy: { releaseDate: "desc" },
-  });
-
-  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
-}
-
 /**
  * Incrementa los votos de un release en 1 (operación atómica).
  * Devuelve el nuevo total de votos.
@@ -294,46 +267,6 @@ export async function incrementVotes(id: string): Promise<number> {
     select: { votes: true },
   });
   return updated.votes;
-}
-
-/**
- * Marca un release como ya publicado en X.
- */
-export async function markAsTweeted(id: string): Promise<void> {
-  await prisma.release.update({
-    where: { id },
-    data: { tweeted: true },
-  });
-}
-
-/**
- * Obtiene releases candidatos para publicar en Telegram.
- * Mismo criterio que Twitter pero usa telegramPosted como flag.
- */
-export async function getHighImpactReleasesToTelegram(): Promise<ReleaseNote[]> {
-  const releases = await prisma.release.findMany({
-    where: {
-      telegramPosted: false,
-      OR: [
-        { votes: { gte: VOTE_THRESHOLD } },
-        { breakingChange: true },
-        { version: { endsWith: ".0.0" } },
-      ],
-    },
-    orderBy: { releaseDate: "desc" },
-  });
-
-  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
-}
-
-/**
- * Marca un release como ya publicado en Telegram.
- */
-export async function markAsTelegramPosted(id: string): Promise<void> {
-  await prisma.release.update({
-    where: { id },
-    data: { telegramPosted: true },
-  });
 }
 
 /**

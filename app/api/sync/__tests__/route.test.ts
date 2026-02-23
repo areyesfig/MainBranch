@@ -7,7 +7,14 @@ vi.mock("@/lib/pipeline", () => ({
     allReleases: [{ id: "1", technology: "Next.js", version: "15" }],
     totalDuration: 200,
   }),
-  runPipelineForSource: vi.fn().mockResolvedValue({ transformedCount: 5, success: true, sourceId: "nextjs-blog" }),
+  runPipelineForSource: vi.fn().mockResolvedValue({ transformedCount: 5, success: true, sourceId: "nextjs-blog", errors: [] }),
+}));
+
+vi.mock("@/lib/pipeline/news", () => ({
+  runFullNewsPipeline: vi.fn().mockResolvedValue({
+    totalArticles: 3,
+    results: [{ sourceId: "ai-news", articlesCount: 3, errors: [] }],
+  }),
 }));
 
 vi.mock("@/lib/sources/config", () => ({
@@ -18,6 +25,18 @@ vi.mock("@/lib/sources/config", () => ({
 
 vi.mock("@/lib/data/releases", () => ({
   invalidateReleasesCache: vi.fn(),
+}));
+
+vi.mock("@/lib/data/news", () => ({
+  invalidateNewsCache: vi.fn(),
+}));
+
+vi.mock("@/lib/db/releases", () => ({
+  deleteOldReleases: vi.fn().mockResolvedValue(0),
+}));
+
+vi.mock("@/lib/db/news", () => ({
+  deleteOldNews: vi.fn().mockResolvedValue(0),
 }));
 
 describe("GET /api/sync", () => {
