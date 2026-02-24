@@ -34,6 +34,7 @@ try {
     headers: {
       Authorization: `Bearer ${CRON_SECRET}`,
     },
+    signal: AbortSignal.timeout(300_000), // 5 minutos
   });
 
   const body = await response.text();
