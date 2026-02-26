@@ -42,28 +42,30 @@ export async function runNewsPipelineForSource(
       .map((item) => transformRssToNews(item, source))
       .filter((a): a is NewsArticle => a !== null);
 
-    // Traducir al español si hay API key
+    // Traducir al español si hay API key (en paralelo)
     const apiKey = process.env.OPENAI_API_KEY;
     if (apiKey && articles.length > 0) {
-      for (const article of articles) {
-        try {
-          const { titleEs, summaryEs, contentEs } = await translateNewsArticle(
-            article.title,
-            article.summary,
-            apiKey,
-            undefined,
-            article.content || undefined
-          );
-          article.titleEs = titleEs;
-          article.summaryEs = summaryEs;
-          if (contentEs) article.contentEs = contentEs;
-        } catch (err) {
-          console.warn(
-            `[news-pipeline] Traducción falló para "${article.title.slice(0, 50)}":`,
-            err instanceof Error ? err.message : err
-          );
-        }
-      }
+      await Promise.all(
+        articles.map(async (article) => {
+          try {
+            const { titleEs, summaryEs, contentEs } = await translateNewsArticle(
+              article.title,
+              article.summary,
+              apiKey,
+              undefined,
+              article.content || undefined
+            );
+            article.titleEs = titleEs;
+            article.summaryEs = summaryEs;
+            if (contentEs) article.contentEs = contentEs;
+          } catch (err) {
+            console.warn(
+              `[news-pipeline] Traducción falló para "${article.title.slice(0, 50)}":`,
+              err instanceof Error ? err.message : err
+            );
+          }
+        })
+      );
     }
 
     if (articles.length > 0) {
