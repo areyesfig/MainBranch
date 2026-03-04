@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
 const SITE_DESCRIPTION =
   "Tu fuente centralizada de noticias, releases y tendencias en tecnología. Changelogs, breaking changes, noticias AI y guías de migración en un solo lugar.";
 

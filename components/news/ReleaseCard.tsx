@@ -6,7 +6,7 @@ import Badge from "@/components/ui/Badge";
 import VoteButton from "@/components/news/VoteButton";
 import ShareButton from "@/components/news/ShareButton";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
 
 const CATEGORY_BORDER: Record<string, string> = {
   frontend: "border-l-blue-500",

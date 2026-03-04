@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { prisma } from "@/lib/db";
 import { getConfirmedSubscribers } from "@/lib/db/subscribers";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
 const FROM = process.env.RESEND_FROM ?? "Main Branch <newsletter@mainbranch.cl>";
 const RELEASES_IN_DIGEST = 6;
 

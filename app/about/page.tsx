@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Zap, Bot, Code, Mail } from "lucide-react";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mainbranch.cl";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
 
 export const metadata: Metadata = {
   title: "Acerca de",
