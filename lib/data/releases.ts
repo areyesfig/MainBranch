@@ -8,6 +8,7 @@ import {
   getReleasesByStackFromDb,
   getReleasesByCategoryFromDb,
   getReleaseByIdFromDb,
+  getReleasesByTechnologyFromDb,
   getReleasesCount,
 } from "@/lib/db/releases";
 import {
@@ -148,6 +149,22 @@ export async function getReleaseById(id: string): Promise<ReleaseNote | null> {
     return getReleaseByIdFromDb(id);
   }
   return mockReleases.find((r) => r.id === id) ?? null;
+}
+
+/**
+ * Obtiene releases de una tecnología específica (BD o mock)
+ */
+export async function getReleasesByTechnology(
+  technology: string
+): Promise<ReleaseNote[]> {
+  const useDb = await shouldUseDb();
+  let releases: ReleaseNote[];
+  if (useDb) {
+    releases = await getReleasesByTechnologyFromDb(technology);
+  } else {
+    releases = mockReleases.filter((r) => r.technology === technology);
+  }
+  return filterStable(releases);
 }
 
 /**

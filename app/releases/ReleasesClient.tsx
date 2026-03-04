@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import ReleaseCard from "@/components/news/ReleaseCard";
 import CategoryFilter from "@/components/news/CategoryFilter";
 import StackFilter from "@/components/news/StackFilter";
@@ -49,8 +49,32 @@ export default function ReleasesClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "impact">("recent");
   const [releases] = useState(initialReleases);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSelected, setCompareSelected] = useState<string[]>([]);
+  const router = useRouter();
   const stacks = getUniqueStacks(releases);
   const categories = getUniqueCategories(releases);
+
+  const handleCompareSelect = useCallback((id: string) => {
+    setCompareSelected((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) return [prev[1], id];
+      return [...prev, id];
+    });
+  }, []);
+
+  const handleCompareNavigate = useCallback(() => {
+    if (compareSelected.length === 2) {
+      router.push(`/releases/compare?a=${compareSelected[0]}&b=${compareSelected[1]}`);
+    }
+  }, [compareSelected, router]);
+
+  const toggleCompareMode = useCallback(() => {
+    setCompareMode((prev) => {
+      if (prev) setCompareSelected([]);
+      return !prev;
+    });
+  }, []);
 
   useEffect(() => {
     const category = searchParams.get("category");
@@ -80,13 +104,25 @@ export default function ReleasesClient({
     <div className="bg-gray-50 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Lanzamientos Tecnológicos
-          </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            Explora los últimos lanzamientos y actualizaciones de las tecnologías más importantes
-          </p>
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Lanzamientos Tecnológicos
+            </h1>
+            <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+              Explora los últimos lanzamientos y actualizaciones de las tecnologías más importantes
+            </p>
+          </div>
+          <button
+            onClick={toggleCompareMode}
+            className={`mt-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              compareMode
+                ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                : "border border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            }`}
+          >
+            {compareMode ? "Cancelar comparación" : "Comparar releases"}
+          </button>
         </div>
 
         {/* Search */}
@@ -149,7 +185,13 @@ export default function ReleasesClient({
         {filteredReleases.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredReleases.map((release) => (
-              <ReleaseCard key={release.id} release={release} />
+              <ReleaseCard
+                key={release.id}
+                release={release}
+                compareMode={compareMode}
+                isSelected={compareSelected.includes(release.id)}
+                onCompareSelect={handleCompareSelect}
+              />
             ))}
           </div>
         ) : (
@@ -157,6 +199,30 @@ export default function ReleasesClient({
             <p className="text-lg text-gray-600 dark:text-gray-400">
               No se encontraron lanzamientos para este filtro.
             </p>
+          </div>
+        )}
+
+        {/* Barra flotante de comparación */}
+        {compareMode && compareSelected.length > 0 && (
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-gray-200 bg-white px-6 py-3 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {compareSelected.length}/2 seleccionados
+              </span>
+              <button
+                onClick={handleCompareNavigate}
+                disabled={compareSelected.length < 2}
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+              >
+                Comparar
+              </button>
+              <button
+                onClick={() => setCompareSelected([])}
+                className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                Limpiar
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -10,7 +10,6 @@
  * Rate limit: 1 request cada 5 minutos (por IP).
  */
 
-import { timingSafeEqual } from "crypto";
 import { NextRequest } from "next/server";
 import { runFullPipeline, runPipelineForSource } from "@/lib/pipeline";
 import { runFullNewsPipeline } from "@/lib/pipeline/news";
@@ -19,6 +18,7 @@ import { invalidateReleasesCache } from "@/lib/data/releases";
 import { invalidateNewsCache } from "@/lib/data/news";
 import { deleteOldReleases } from "@/lib/db/releases";
 import { deleteOldNews } from "@/lib/db/news";
+import { isAuthorized } from "@/lib/auth/isAuthorized";
 
 export const dynamic = "force-dynamic";
 
@@ -43,28 +43,6 @@ export function _resetSyncRateLimit() {
   syncHits.clear();
 }
 
-function isAuthorized(request: NextRequest): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) {
-    // Solo permitir sin secret en desarrollo local
-    return process.env.NODE_ENV !== "production";
-  }
-  const authHeader = request.headers.get("authorization") ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-  // Comparación timing-safe para evitar ataques de timing
-  try {
-    const secretBuf = Buffer.from(cronSecret, "utf8");
-    const tokenBuf = Buffer.from(token, "utf8");
-    if (secretBuf.length !== tokenBuf.length) {
-      // Comparar contra sí mismo para no filtrar diferencia de longitud por timing
-      timingSafeEqual(secretBuf, secretBuf);
-      return false;
-    }
-    return timingSafeEqual(secretBuf, tokenBuf);
-  } catch {
-    return false;
-  }
-}
 
 export async function GET(request: NextRequest) {
   if (!isAuthorized(request)) {

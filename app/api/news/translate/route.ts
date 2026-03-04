@@ -8,20 +8,22 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { translateNewsArticle } from "@/lib/ai/translateNews";
+import { isAuthorized } from "@/lib/auth/isAuthorized";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  // Auth: misma lógica que /api/sync
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization") ?? "";
-    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-    if (token !== cronSecret) {
-      return Response.json({ error: "No autorizado" }, { status: 401 });
-    }
-  } else if (process.env.NODE_ENV === "production") {
+  if (!isAuthorized(request)) {
     return Response.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  // Validar Content-Type
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.split(";")[0].trim().includes("application/json")) {
+    return Response.json(
+      { error: "Content-Type debe ser application/json" },
+      { status: 415 }
+    );
   }
 
   const apiKey = process.env.OPENAI_API_KEY;

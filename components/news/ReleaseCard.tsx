@@ -43,16 +43,42 @@ function ImpactBadge({ score }: { score?: number }) {
 
 interface ReleaseCardProps {
   release: ReleaseNote;
+  compareMode?: boolean;
+  isSelected?: boolean;
+  onCompareSelect?: (id: string) => void;
 }
 
-export default function ReleaseCard({ release }: ReleaseCardProps) {
+export default function ReleaseCard({ release, compareMode, isSelected, onCompareSelect }: ReleaseCardProps) {
   const isBreakingChange = release.breakingChange;
   const borderColor = CATEGORY_BORDER[release.category ?? ""] ?? "border-l-gray-300 dark:border-l-gray-700";
 
   return (
     <article
-      className={`group relative rounded-lg border border-gray-200 border-l-4 ${borderColor} bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900`}
+      className={`group relative rounded-lg border border-gray-200 border-l-4 ${borderColor} bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 ${isSelected ? "ring-2 ring-blue-500 dark:ring-blue-400" : ""} ${compareMode ? "cursor-pointer" : ""}`}
+      onClick={compareMode && onCompareSelect ? () => onCompareSelect(release.id) : undefined}
     >
+      {/* Compare checkbox */}
+      {compareMode && (
+        <div className="mb-3 flex items-center gap-2">
+          <div
+            className={`flex h-5 w-5 items-center justify-center rounded border-2 ${
+              isSelected
+                ? "border-blue-500 bg-blue-500 text-white"
+                : "border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            {isSelected && (
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {isSelected ? "Seleccionado" : "Seleccionar para comparar"}
+          </span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">

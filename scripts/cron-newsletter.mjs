@@ -25,28 +25,58 @@ if (!CRON_SECRET) {
 }
 
 const sendUrl = `${APP_URL}/api/newsletter/send`;
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 10_000;
 
-console.log(`[cron-newsletter] Sending newsletter via ${sendUrl}`);
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-try {
+async function attemptSend(attempt) {
+  console.log(
+    `[cron-newsletter] Attempt ${attempt}/${MAX_RETRIES} — ${sendUrl}`
+  );
+
   const response = await fetch(sendUrl, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${CRON_SECRET}`,
     },
-    signal: AbortSignal.timeout(120_000), // 2 minutos
+    signal: AbortSignal.timeout(120_000),
   });
 
   const body = await response.text();
 
-  if (!response.ok) {
-    console.error(
-      `[cron-newsletter] Failed (${response.status}): ${body}`
+  if (response.ok) {
+    console.log(
+      `[cron-newsletter] Completed (${response.status}): ${body}`
     );
-    process.exit(1);
+    return true;
   }
 
-  console.log(`[cron-newsletter] Completed (${response.status}): ${body}`);
+  if ([502, 503, 504].includes(response.status) && attempt < MAX_RETRIES) {
+    console.warn(
+      `[cron-newsletter] Got ${response.status}, retrying in ${RETRY_DELAY_MS / 1000}s...`
+    );
+    return false;
+  }
+
+  console.error(
+    `[cron-newsletter] Failed (${response.status}): ${body}`
+  );
+  process.exit(1);
+}
+
+try {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const ok = await attemptSend(attempt);
+    if (ok) break;
+    if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY_MS);
+    if (attempt === MAX_RETRIES) {
+      console.error("[cron-newsletter] All retries exhausted");
+      process.exit(1);
+    }
+  }
 } catch (error) {
   console.error("[cron-newsletter] Request failed:", error);
   process.exit(1);

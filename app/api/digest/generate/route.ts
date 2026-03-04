@@ -6,43 +6,25 @@
  *   monthly el día 1. Protegido por CRON_SECRET.
  */
 
-import { timingSafeEqual } from "crypto";
 import { NextRequest } from "next/server";
 import { digestPeriodSchema, type DigestPeriod } from "@/lib/schemas/digest";
 import { getReleasesInRange } from "@/lib/db/releases";
 import { upsertDigest } from "@/lib/db/digests";
 import { generateDigestWithAI } from "@/lib/ai/generateDigest";
 import { getWeeklyRange, getMonthlyRange } from "@/lib/utils/dateRanges";
+import { isAuthorized } from "@/lib/auth/isAuthorized";
 
 export const dynamic = "force-dynamic";
-
-function isAuthorized(request: NextRequest): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) {
-    return process.env.NODE_ENV !== "production";
-  }
-  const authHeader = request.headers.get("authorization") ?? "";
-  const token = authHeader.match(/^Bearer\s+(\S+)$/)?.[1] ?? "";
-  try {
-    const secretBuf = Buffer.from(cronSecret, "utf8");
-    const tokenBuf = Buffer.from(token, "utf8");
-    if (secretBuf.length !== tokenBuf.length) {
-      timingSafeEqual(secretBuf, secretBuf);
-      return false;
-    }
-    return timingSafeEqual(secretBuf, tokenBuf);
-  } catch {
-    return false;
-  }
-}
 
 async function generateForPeriod(
   period: DigestPeriod,
   apiKey: string,
-  force = false
+  force = false,
+  ref?: Date
 ) {
+  const refDate = ref ?? new Date();
   const { startDate, endDate } =
-    period === "weekly" ? getWeeklyRange() : getMonthlyRange();
+    period === "weekly" ? getWeeklyRange(refDate) : getMonthlyRange(refDate);
 
   const releases = await getReleasesInRange(startDate, endDate);
 
@@ -167,9 +149,17 @@ export async function POST(request: NextRequest) {
 
   const period = parsed.data;
   const force = (body as { force?: boolean })?.force === true;
+  const refStr = (body as { ref?: string })?.ref;
+  const ref = refStr ? new Date(refStr) : undefined;
+  if (ref && isNaN(ref.getTime())) {
+    return Response.json(
+      { error: "ref debe ser una fecha ISO válida" },
+      { status: 400 }
+    );
+  }
 
   try {
-    const result = await generateForPeriod(period, apiKey, force);
+    const result = await generateForPeriod(period, apiKey, force, ref);
     return Response.json(result);
   } catch (error) {
     console.error("Error generando digest:", error);

@@ -9,6 +9,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/releases", label: "Releases" },
+  { href: "/tech", label: "Tecnologías" },
   { href: "/noticias", label: "Noticias AI" },
   { href: "/timeline", label: "Timeline" },
   { href: "/digest", label: "Digests" },

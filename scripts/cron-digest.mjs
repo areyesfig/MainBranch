@@ -25,30 +25,65 @@ if (!CRON_SECRET) {
 }
 
 const generateUrl = `${APP_URL}/api/digest/generate`;
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 10_000;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 async function generateDigest(period) {
-  console.log(`[cron-digest] Generating ${period} digest via ${generateUrl}`);
-
-  const response = await fetch(generateUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${CRON_SECRET}`,
-    },
-    body: JSON.stringify({ period }),
-  });
-
-  const body = await response.text();
-
-  if (!response.ok) {
-    console.error(
-      `[cron-digest] ${period} digest failed (${response.status}): ${body}`
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    console.log(
+      `[cron-digest] Generating ${period} digest — attempt ${attempt}/${MAX_RETRIES} via ${generateUrl}`
     );
-    return false;
-  }
 
-  console.log(`[cron-digest] ${period} digest completed (${response.status}): ${body}`);
-  return true;
+    try {
+      const response = await fetch(generateUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${CRON_SECRET}`,
+        },
+        body: JSON.stringify({ period }),
+        signal: AbortSignal.timeout(300_000),
+      });
+
+      const body = await response.text();
+
+      if (response.ok) {
+        console.log(
+          `[cron-digest] ${period} digest completed (${response.status}): ${body}`
+        );
+        return true;
+      }
+
+      if ([502, 503, 504].includes(response.status) && attempt < MAX_RETRIES) {
+        console.warn(
+          `[cron-digest] Got ${response.status}, retrying in ${RETRY_DELAY_MS / 1000}s...`
+        );
+        await sleep(RETRY_DELAY_MS);
+        continue;
+      }
+
+      console.error(
+        `[cron-digest] ${period} digest failed (${response.status}): ${body}`
+      );
+      return false;
+    } catch (error) {
+      if (attempt < MAX_RETRIES) {
+        console.warn(
+          `[cron-digest] Request error, retrying in ${RETRY_DELAY_MS / 1000}s...`,
+          error.message
+        );
+        await sleep(RETRY_DELAY_MS);
+        continue;
+      }
+      console.error(`[cron-digest] All retries exhausted for ${period}:`, error);
+      return false;
+    }
+  }
+  return false;
 }
 
 try {

@@ -209,6 +209,19 @@ export async function getReleaseByIdFromDb(id: string): Promise<ReleaseNote | nu
 }
 
 /**
+ * Obtiene releases de una tecnología específica, ordenados por fecha DESC
+ */
+export async function getReleasesByTechnologyFromDb(
+  technology: string
+): Promise<ReleaseNote[]> {
+  const releases = await prisma.release.findMany({
+    where: { technology },
+    orderBy: { releaseDate: "desc" },
+  });
+  return releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+}
+
+/**
  * Obtiene releases en un rango de fechas (sin caché — clave demasiado dinámica)
  */
 export async function getReleasesInRange(
@@ -267,6 +280,40 @@ export async function incrementVotes(id: string): Promise<number> {
     select: { votes: true },
   });
   return updated.votes;
+}
+
+/**
+ * Obtiene releases paginados (cursor-based) de la BD.
+ */
+export async function getReleasesPaginated(options: {
+  limit?: number;
+  cursor?: string;
+  stack?: string;
+  category?: string;
+  breakingOnly?: boolean;
+}): Promise<{ items: ReleaseNote[]; nextCursor: string | null }> {
+  const { limit = 20, cursor, stack, category, breakingOnly } = options;
+
+  const where: Record<string, unknown> = {};
+  if (stack) where.stack = stack;
+  if (category) where.category = category;
+  if (breakingOnly) where.breakingChange = true;
+
+  const releases = await prisma.release.findMany({
+    where,
+    orderBy: { releaseDate: "desc" },
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+  });
+
+  const hasMore = releases.length > limit;
+  const items = hasMore ? releases.slice(0, limit) : releases;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
+
+  return {
+    items: items.map((r) => dbToReleaseNote(r)!).filter(Boolean),
+    nextCursor,
+  };
 }
 
 /**

@@ -37,6 +37,9 @@ model Release {
   @@index([category])
   @@index([releaseDate])
   @@index([votes])
+  @@index([technology])
+  @@index([breakingChange])
+  @@index([createdAt])
 }
 
 model Subscriber {

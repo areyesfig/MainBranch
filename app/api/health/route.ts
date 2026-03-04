@@ -3,33 +3,14 @@
  * Protegido por CRON_SECRET en producción.
  */
 
-import { timingSafeEqual } from "crypto";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
+import { isAuthorized } from "@/lib/auth/isAuthorized";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization") ?? "";
-    // Extracción segura del token con regex
-    const token = authHeader.match(/^Bearer\s+(\S+)$/)?.[1] ?? "";
-    try {
-      const secretBuf = Buffer.from(cronSecret, "utf8");
-      const tokenBuf = Buffer.from(token, "utf8");
-      // Comparación en tiempo constante para prevenir timing attacks
-      if (secretBuf.length !== tokenBuf.length) {
-        timingSafeEqual(secretBuf, secretBuf); // dummy para timing uniforme
-        return Response.json({ error: "No autorizado" }, { status: 401 });
-      }
-      if (!timingSafeEqual(secretBuf, tokenBuf)) {
-        return Response.json({ error: "No autorizado" }, { status: 401 });
-      }
-    } catch {
-      return Response.json({ error: "No autorizado" }, { status: 401 });
-    }
-  } else if (process.env.NODE_ENV === "production") {
+  if (!isAuthorized(request)) {
     return Response.json({ error: "No autorizado" }, { status: 401 });
   }
 
