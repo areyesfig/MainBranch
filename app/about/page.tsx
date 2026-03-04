@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Zap, Bot, Code, Mail } from "lucide-react";
+import { Zap, Bot, Code, Mail, Heart, Coffee, Github } from "lucide-react";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
 
@@ -51,6 +51,11 @@ const STEPS = [
   { number: "02", title: "Procesamos", description: "Extraemos versiones, detectamos breaking changes, calculamos impacto y validamos con Zod." },
   { number: "03", title: "Publicamos", description: "Servimos todo via Server Components, feeds RSS, newsletter semanal y bot de Telegram." },
 ];
+
+const KOFI_URL = process.env.NEXT_PUBLIC_KOFI_URL ?? "";
+const GITHUB_SPONSORS_URL = process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL ?? "https://github.com/sponsors/areyesfig";
+const BUYMECOFFEE_URL = process.env.NEXT_PUBLIC_BUYMECOFFEE_URL ?? "";
+const showSupport = KOFI_URL || GITHUB_SPONSORS_URL || BUYMECOFFEE_URL;
 
 export default function AboutPage() {
   return (
@@ -130,6 +135,63 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
+
+        {/* Apoya el proyecto */}
+        {showSupport && (
+          <div className="mb-12 rounded-lg border border-rose-200 bg-gradient-to-br from-rose-50 to-white p-8 dark:border-rose-900/50 dark:from-rose-950/30 dark:to-gray-900">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/50">
+                <Heart className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+              </div>
+              <h2 className="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+                Apoya el proyecto
+              </h2>
+              <p className="mb-6 max-w-xl text-gray-600 dark:text-gray-400">
+                Si Main Branch te ahorra tiempo y quieres que sigamos mejorando el hub,
+                considera invitarnos un café. Cualquier apoyo ayuda a mantener el sitio y
+                las fuentes actualizadas.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {KOFI_URL && (
+                  <a
+                    href={KOFI_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#ff5e5b] px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                    aria-label="Apoyar en Ko-fi"
+                  >
+                    <Coffee className="h-4 w-4" />
+                    Ko-fi
+                  </a>
+                )}
+                {GITHUB_SPONSORS_URL && (
+                  <a
+                    href={GITHUB_SPONSORS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                    aria-label="Apoyar con GitHub Sponsors"
+                  >
+                    <Github className="h-4 w-4" />
+                    GitHub Sponsors
+                  </a>
+                )}
+                {BUYMECOFFEE_URL && (
+                  <a
+                    href={BUYMECOFFEE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                    aria-label="Invitar un café en Buy Me a Coffee"
+                  >
+                    <Coffee className="h-4 w-4" />
+                    Buy Me a Coffee
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tech Stack */}
         <div className="rounded-lg border border-gray-200 bg-white p-8 dark:border-gray-800 dark:bg-gray-900">
