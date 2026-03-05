@@ -56,12 +56,21 @@ export const metadata: Metadata = {
     siteName: "Main Branch",
     title: "Main Branch — Hub de Tecnología",
     description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Main Branch — Hub de Tecnología",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Main Branch — Hub de Tecnología",
     description: SITE_DESCRIPTION,
     creator: "@mainbranch_dev",
+    images: [`${SITE_URL}/og-image.png`],
   },
   alternates: {
     canonical: SITE_URL,

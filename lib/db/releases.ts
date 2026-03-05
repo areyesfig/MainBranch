@@ -209,6 +209,27 @@ export async function getReleaseByIdFromDb(id: string): Promise<ReleaseNote | nu
 }
 
 /**
+ * Obtiene releases por múltiples stacks (con caché Redis si está disponible)
+ */
+export async function getReleasesByStacksFromDb(
+  stacks: string[]
+): Promise<ReleaseNote[]> {
+  if (!stacks.length) return getReleasesFromDb();
+
+  const key = CACHE_KEYS.STACKS(stacks);
+  const cached = await cacheGet<ReleaseNote[]>(key);
+  if (cached) return cached;
+
+  const releases = await prisma.release.findMany({
+    where: { stack: { in: stacks } },
+    orderBy: { releaseDate: "desc" },
+  });
+  const result = releases.map((r) => dbToReleaseNote(r)!).filter(Boolean);
+  await cacheSet(key, result);
+  return result;
+}
+
+/**
  * Obtiene releases de una tecnología específica, ordenados por fecha DESC
  */
 export async function getReleasesByTechnologyFromDb(

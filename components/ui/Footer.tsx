@@ -139,7 +139,7 @@ export default function Footer() {
               <NewsletterForm />
               <div className="flex space-x-4 pt-2">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/areyesfig/mainbranch"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -148,7 +148,7 @@ export default function Footer() {
                   <Github className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://twitter.com/mainbranch_dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"

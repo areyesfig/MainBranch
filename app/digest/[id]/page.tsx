@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDigestById } from "@/lib/data/digests";
 import DigestDetail from "@/components/news/DigestDetail";
@@ -8,6 +9,28 @@ export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const digest = await getDigestById(id);
+
+  if (!digest) {
+    return { title: "Digest no encontrado" };
+  }
+
+  const periodLabel = digest.period === "weekly" ? "Semanal" : "Mensual";
+  const start = new Date(digest.startDate).toLocaleDateString("es-CL");
+  const end = new Date(digest.endDate).toLocaleDateString("es-CL");
+  const title = `Digest ${periodLabel} — ${start} al ${end}`;
+  const description = `Resumen ${periodLabel.toLowerCase()} con ${digest.releaseCount} releases de ${digest.technologies.join(", ")}.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/digest/${id}` },
+    openGraph: { title, description, url: `/digest/${id}` },
+  };
 }
 
 export default async function DigestDetailPage({ params }: PageProps) {

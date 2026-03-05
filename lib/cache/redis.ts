@@ -12,6 +12,7 @@ const PREFIX = "mb:releases";
 export const CACHE_KEYS = {
   ALL: `${PREFIX}:all`,
   STACK: (stack: string) => `${PREFIX}:stack:${stack}`,
+  STACKS: (stacks: string[]) => `${PREFIX}:stacks:${[...stacks].sort().join(",")}`,
   CATEGORY: (cat: string) => `${PREFIX}:category:${cat}`,
   ID: (id: string) => `${PREFIX}:id:${id}`,
   COUNT: `${PREFIX}:count`,
@@ -34,10 +35,19 @@ function getClient(): Redis | null {
       maxRetriesPerRequest: 1,
       enableOfflineQueue: false,
       connectTimeout: 3000,
+      retryStrategy(times) {
+        if (times > 3) return null; // dejar de reconectar tras 3 intentos
+        return Math.min(times * 500, 2000);
+      },
     });
 
+    let lastErrorLog = 0;
     globalForRedis._redisClient.on("error", (err: Error) => {
-      console.error("[Redis]", err.message);
+      const now = Date.now();
+      if (now - lastErrorLog > 60_000) {
+        console.error("[Redis]", err.message);
+        lastErrorLog = now;
+      }
     });
   }
 

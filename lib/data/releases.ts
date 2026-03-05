@@ -6,6 +6,7 @@ import type { ReleaseNote } from "@/types/release";
 import {
   getReleasesFromDb,
   getReleasesByStackFromDb,
+  getReleasesByStacksFromDb,
   getReleasesByCategoryFromDb,
   getReleaseByIdFromDb,
   getReleasesByTechnologyFromDb,
@@ -96,8 +97,7 @@ export async function getReleasesByStacks(
   const useDb = await shouldUseDb();
   let releases: ReleaseNote[];
   if (useDb) {
-    const all = await getReleasesFromDb();
-    releases = all.filter((r) => r.stack && stacks.includes(r.stack));
+    releases = await getReleasesByStacksFromDb(stacks);
   } else {
     releases = filterReleasesByStacks(stacks);
   }

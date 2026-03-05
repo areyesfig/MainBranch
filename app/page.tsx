@@ -45,8 +45,31 @@ export default async function Home() {
   const totalNews = newsArticles.length;
   const totalTechs = Object.keys(STACK_LABELS).length;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Main Branch",
+    url: "https://www.mainbranch.cl",
+    description:
+      "Tu fuente centralizada de noticias, releases y tendencias en tecnología.",
+    publisher: {
+      "@type": "Organization",
+      name: "Main Branch",
+      url: "https://www.mainbranch.cl",
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.mainbranch.cl/releases?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <div className="bg-gray-50 dark:bg-gray-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.15),transparent_60%)]" />

@@ -25,9 +25,10 @@ export default function StackFilter({
           Filtrar por Stack
         </h3>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por stack tecnológico">
         <button
           onClick={() => onStackChange(null)}
+          aria-pressed={selectedStack === null}
           className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             selectedStack === null
               ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
@@ -40,6 +41,8 @@ export default function StackFilter({
           <button
             key={stack}
             onClick={() => onStackChange(stack)}
+            aria-pressed={selectedStack === stack}
+            aria-label={`Filtrar por ${getStackLabel(stack)}`}
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               selectedStack === stack
                 ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"

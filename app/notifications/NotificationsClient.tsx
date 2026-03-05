@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Bell, ChevronRight, Rss, Settings } from "lucide-react";
 import { useNotificationPreferences } from "@/contexts/NotificationContext";
@@ -18,6 +18,11 @@ export default function NotificationsClient({
   initialReleases,
 }: NotificationsClientProps) {
   const { selectedStacks } = useNotificationPreferences();
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
   const [showPreferences, setShowPreferences] = useState(false);
 
   const releases = useMemo(() => {
@@ -88,8 +93,8 @@ export default function NotificationsClient({
                 Añade esta URL a tu lector de RSS para recibir solo releases de tus stacks:
               </p>
               <code className="block break-all rounded bg-gray-100 px-2 py-2 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                {typeof window !== "undefined"
-                  ? `${window.location.origin}/feed?stack=${selectedStacks.join(",")}`
+                {origin
+                  ? `${origin}/feed?stack=${selectedStacks.join(",")}`
                   : `/feed?stack=${selectedStacks.join(",")}`}
               </code>
             </div>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mainbranch-production.up.railway.app/sitemap.xml
+Sitemap: https://www.mainbranch.cl/sitemap.xml

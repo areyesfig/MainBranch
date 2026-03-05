@@ -29,9 +29,10 @@ export default function CategoryFilter({
           Filtrar por Categoría
         </h3>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
         <button
           onClick={() => onCategoryChange(null)}
+          aria-pressed={selectedCategory === null}
           className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             selectedCategory === null
               ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
@@ -47,6 +48,8 @@ export default function CategoryFilter({
             <button
               key={categoryId}
               onClick={() => onCategoryChange(categoryId)}
+              aria-pressed={selectedCategory === categoryId}
+              aria-label={`Filtrar por ${label}`}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === categoryId
                   ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
