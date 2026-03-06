@@ -41,8 +41,8 @@ export default function NewsletterForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-300">
-        ✅ {message}
+      <div className="rounded-[var(--radius-lg)] bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-300">
+        {message}
       </div>
     );
   }
@@ -57,12 +57,12 @@ export default function NewsletterForm() {
           placeholder="tu@email.com"
           required
           disabled={status === "loading"}
-          className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+          className="flex-1 rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:border-[var(--color-brand)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand)] disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="flex items-center gap-1.5 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--color-brand)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
         >
           <Mail className="h-3.5 w-3.5" />
           {status === "loading" ? "..." : "Suscribirse"}

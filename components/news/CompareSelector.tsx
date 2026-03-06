@@ -71,8 +71,8 @@ export default function CompareSelector({ currentA, currentB }: CompareSelectorP
   const canCompare = selectedA && selectedB && selectedA !== selectedB;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-      <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4">
+      <h3 className="mb-3 text-sm font-semibold text-[var(--color-text-primary)]">
         Cambiar releases
       </h3>
 
@@ -81,19 +81,19 @@ export default function CompareSelector({ currentA, currentB }: CompareSelectorP
         placeholder="Buscar tecnología o versión..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-3 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+        className="mb-3 w-full rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:border-[var(--color-brand)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand)]"
       />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-[var(--color-text-tertiary)]">
             Release A
           </label>
           <select
             value={selectedA}
             onChange={(e) => setSelectedA(e.target.value)}
             disabled={loading}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand)]"
           >
             <option value="">Seleccionar...</option>
             {grouped.map(([tech, items]) => (
@@ -109,14 +109,14 @@ export default function CompareSelector({ currentA, currentB }: CompareSelectorP
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-[var(--color-text-tertiary)]">
             Release B
           </label>
           <select
             value={selectedB}
             onChange={(e) => setSelectedB(e.target.value)}
             disabled={loading}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-brand)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand)]"
           >
             <option value="">Seleccionar...</option>
             {grouped.map(([tech, items]) => (
@@ -139,7 +139,7 @@ export default function CompareSelector({ currentA, currentB }: CompareSelectorP
       <button
         onClick={handleCompare}
         disabled={!canCompare}
-        className="mt-3 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+        className="mt-3 w-full rounded-[var(--radius-md)] bg-[var(--color-brand)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         Comparar
       </button>

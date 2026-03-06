@@ -9,9 +9,6 @@ interface AIReleaseExplanationProps {
 
 const MAX_RETRIES = 2;
 
-/**
- * Sección que permite generar una explicación del release en lenguaje claro usando IA.
- */
 export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanationProps) {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,20 +44,20 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
   const canRetry = !loading && !explanation && retries.current < MAX_RETRIES;
 
   return (
-    <div className="mb-8 rounded-lg border border-violet-200 bg-white p-6 dark:border-violet-900 dark:bg-gray-900">
-      <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
-        <Sparkles className="h-5 w-5 text-violet-500 dark:text-violet-400" />
+    <div className="rounded-[var(--radius-lg)] border border-purple-500/20 bg-[var(--color-bg-elevated)] p-5 sm:p-6">
+      <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-[var(--color-text-primary)]">
+        <Sparkles className="h-5 w-5 text-purple-500" />
         Explicación con IA
       </h2>
-      <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        Genera un resumen en lenguaje claro de los cambios de este release, pensado para desarrolladores.
+      <p className="mb-4 text-sm text-[var(--color-text-tertiary)]">
+        Genera un resumen en lenguaje claro de los cambios de este release.
       </p>
 
       {canRetry && !error && (
         <button
           type="button"
           onClick={handleGenerate}
-          className="inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600"
+          className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
         >
           <Sparkles className="h-4 w-4" />
           Generar explicación
@@ -68,7 +65,7 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
       )}
 
       {loading && (
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-[var(--color-text-tertiary)]">
           <Loader2 className="h-5 w-5 animate-spin" />
           <span>Generando explicación...</span>
         </div>
@@ -76,7 +73,7 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
 
       {error && (
         <div className="space-y-3">
-          <div className="flex items-start gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <div className="flex items-start gap-2 rounded-[var(--radius-md)] bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-300">
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
@@ -84,7 +81,7 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
             <button
               type="button"
               onClick={handleGenerate}
-              className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+              className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border-default)] px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-secondary)]"
             >
               Reintentar
             </button>
@@ -93,8 +90,10 @@ export default function AIReleaseExplanation({ releaseId }: AIReleaseExplanation
       )}
 
       {explanation && (
-        <div className="mt-4 rounded-md bg-gray-50 p-4 text-gray-700 dark:bg-gray-800/50 dark:text-gray-300">
-          <p className="whitespace-pre-line text-sm leading-relaxed">{explanation}</p>
+        <div className="mt-4 rounded-[var(--radius-md)] bg-[var(--color-bg-secondary)] p-4">
+          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            {explanation}
+          </p>
         </div>
       )}
     </div>

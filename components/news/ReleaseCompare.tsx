@@ -26,7 +26,7 @@ function ListCompare({
 
   return (
     <div className="mb-6">
-      <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+      <h3 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">
         {title}
       </h3>
       <div className="grid gap-4 md:grid-cols-2">
@@ -40,7 +40,7 @@ function ListCompare({
 function ItemList({ items, dotColor }: { items: string[]; dotColor: string }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm italic text-gray-400 dark:text-gray-500">
+      <p className="text-sm italic text-[var(--color-text-tertiary)]">
         Sin datos
       </p>
     );
@@ -50,7 +50,7 @@ function ItemList({ items, dotColor }: { items: string[]; dotColor: string }) {
       {items.map((item, i) => (
         <li
           key={i}
-          className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
+          className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]"
         >
           <span
             className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`}
@@ -75,13 +75,13 @@ function StatRow({
 }) {
   return (
     <tr className={highlight ? "bg-yellow-50 dark:bg-yellow-900/10" : ""}>
-      <td className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+      <td className="px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)]">
         {label}
       </td>
-      <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">
+      <td className="px-4 py-2 text-sm text-[var(--color-text-primary)]">
         {valueA}
       </td>
-      <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">
+      <td className="px-4 py-2 text-sm text-[var(--color-text-primary)]">
         {valueB}
       </td>
     </tr>
@@ -89,7 +89,7 @@ function StatRow({
 }
 
 function ComplexityBadge({ level }: { level?: string }) {
-  if (!level) return <span className="text-gray-400">—</span>;
+  if (!level) return <span className="text-[var(--color-text-tertiary)]">—</span>;
   const variants: Record<string, "green" | "yellow" | "orange" | "red"> = {
     low: "green",
     medium: "yellow",
@@ -116,29 +116,29 @@ export default function ReleaseCompare({
     <div>
       {/* Headers */}
       <div className="mb-6 grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
               {releaseA.technology}
             </h2>
             <Badge variant="blue" size="sm">
               v{releaseA.version}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
             {formatDate(releaseA.releaseDate)}
           </p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
               {releaseB.technology}
             </h2>
             <Badge variant="blue" size="sm">
               v{releaseB.version}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-[var(--color-text-tertiary)]">
             {formatDate(releaseB.releaseDate)}
           </p>
         </div>
@@ -146,36 +146,36 @@ export default function ReleaseCompare({
 
       {/* TLDR */}
       <div className="mb-6">
-        <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">
           Resumen (TLDR)
         </h3>
         <div className="grid gap-4 md:grid-cols-2">
-          <p className="rounded-lg border border-gray-200 bg-white p-4 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
+          <p className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-text-secondary)]">
             {safe(releaseA.tldr)}
           </p>
-          <p className="rounded-lg border border-gray-200 bg-white p-4 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
+          <p className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-text-secondary)]">
             {safe(releaseB.tldr)}
           </p>
         </div>
       </div>
 
       {/* Stats Table */}
-      <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+      <div className="mb-6 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-border-default)]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-              <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+            <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-bg-secondary)]">
+              <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                 Métrica
               </th>
-              <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+              <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                 {releaseA.technology} v{releaseA.version}
               </th>
-              <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+              <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                 {releaseB.technology} v{releaseB.version}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
+          <tbody className="divide-y divide-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)]">
             <StatRow
               label="Impact Score"
               valueA={releaseA.impactScore ?? "—"}
@@ -233,22 +233,22 @@ export default function ReleaseCompare({
 
       {/* Bundle Size */}
       {(releaseA.bundleSizeImpact || releaseB.bundleSizeImpact) && (
-        <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+        <div className="mb-6 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-border-default)]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+              <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-bg-secondary)]">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                   Bundle Size
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                   {releaseA.technology} v{releaseA.version}
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
+                <th className="px-4 py-2 text-left text-xs font-semibold text-[var(--color-text-tertiary)]">
                   {releaseB.technology} v{releaseB.version}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
+            <tbody className="divide-y divide-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)]">
               <StatRow
                 label="Antes"
                 valueA={

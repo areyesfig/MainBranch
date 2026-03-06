@@ -1,23 +1,60 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink } from "lucide-react";
-import { getReleaseById } from "@/lib/data/releases";
+import { ArrowLeft } from "lucide-react";
+import { getReleaseById, getRelatedReleases } from "@/lib/data/releases";
 import { formatDate, sanitizeReleaseText } from "@/lib/utils";
+import dynamic from "next/dynamic";
 import BreakingChangesDetail from "@/components/news/BreakingChangesDetail";
-import MigrationGuide from "@/components/news/MigrationGuide";
 import EcosystemImpact from "@/components/news/EcosystemImpact";
 import VersionComparison from "@/components/news/VersionComparison";
-import AIReleaseExplanation from "@/components/news/AIReleaseExplanation";
-import ShareButton from "@/components/news/ShareButton";
 
-export const revalidate = 3600; // revalidar cada hora
+const MigrationGuide = dynamic(() => import("@/components/news/MigrationGuide"), {
+  loading: () => (
+    <div className="animate-pulse rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-6">
+      <div className="h-5 w-40 rounded bg-[var(--color-bg-tertiary)]" />
+      <div className="mt-4 space-y-3">
+        <div className="h-4 w-full rounded bg-[var(--color-bg-tertiary)]" />
+        <div className="h-4 w-3/4 rounded bg-[var(--color-bg-tertiary)]" />
+      </div>
+    </div>
+  ),
+});
+
+const AIReleaseExplanation = dynamic(() => import("@/components/news/AIReleaseExplanation"), {
+  loading: () => (
+    <div className="animate-pulse rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-6">
+      <div className="h-5 w-48 rounded bg-[var(--color-bg-tertiary)]" />
+      <div className="mt-4 space-y-2">
+        <div className="h-4 w-full rounded bg-[var(--color-bg-tertiary)]" />
+        <div className="h-4 w-5/6 rounded bg-[var(--color-bg-tertiary)]" />
+      </div>
+    </div>
+  ),
+});
+import ArticleMeta from "@/components/article/ArticleMeta";
+import ArticleSummary from "@/components/article/ArticleSummary";
+import ReadingProgress from "@/components/article/ReadingProgress";
+import RelatedReleases from "@/components/news/RelatedReleases";
+
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mainbranch.cl";
+
+const CATEGORY_COLORS: Record<string, string> = {
+  frontend: "var(--color-cat-frontend)",
+  backend: "var(--color-cat-backend)",
+  "ai-ml": "var(--color-cat-ai-ml)",
+  llms: "var(--color-cat-llms)",
+  devops: "var(--color-cat-devops)",
+  mobile: "var(--color-cat-mobile)",
+  databases: "var(--color-cat-databases)",
+  tools: "var(--color-cat-tools)",
+};
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -66,7 +103,8 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // Limpiar textos para evitar ruido (markdown, URLs, referencias)
+  const relatedReleases = await getRelatedReleases(release, 4);
+
   const safe = (t: string | undefined | null, max = 10000) =>
     sanitizeReleaseText(t, max);
   const sanitizedTldr = safe(release.tldr);
@@ -84,6 +122,9 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
       description: safe(step.description, 2000),
       codeExample: step.codeExample ? safe(step.codeExample, 3000) : undefined,
     })) ?? [];
+
+  const accentColor =
+    CATEGORY_COLORS[release.category ?? ""] ?? "var(--color-brand)";
 
   const releaseDate =
     release.releaseDate instanceof Date
@@ -107,182 +148,205 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950">
+    <>
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Back Button */}
-        <Link
-          href="/releases"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver a Lanzamientos
-        </Link>
 
-        {/* Header */}
-        <div className="mb-8">
-          <div className="mb-4 flex items-center gap-3">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              {release.technology}
-            </h1>
-            <span className="rounded-md bg-blue-100 px-3 py-1 text-lg font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+      <article className="animate-fade-in py-8 sm:py-12">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          {/* Back */}
+          <Link
+            href="/releases"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver a Releases
+          </Link>
+
+          {/* Overline */}
+          <p
+            className="overline mb-3"
+            style={{ color: accentColor }}
+          >
+            {release.category?.toUpperCase() ?? "RELEASE"}
+          </p>
+
+          {/* Title */}
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl leading-tight">
+            {release.technology}{" "}
+            <span className="text-[var(--color-text-tertiary)]">
               v{release.version}
             </span>
-            <ShareButton
-              title={release.tldr ?? `Notas de lanzamiento de ${release.technology} ${release.version}`}
-              url={`${SITE_URL}/releases/${release.id}`}
+          </h1>
+
+          {/* Meta bar */}
+          <div className="mt-4 mb-8">
+            <ArticleMeta
+              releaseId={release.id}
+              category={release.category}
+              releaseDate={release.releaseDate}
+              impactScore={release.impactScore}
+              breakingChange={release.breakingChange}
+              officialUrl={release.officialUrl}
+              shareTitle={
+                release.tldr ??
+                `Notas de lanzamiento de ${release.technology} ${release.version}`
+              }
+              shareUrl={`${SITE_URL}/releases/${release.id}`}
               technology={release.technology}
               version={release.version}
             />
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Lanzado el {formatDate(release.releaseDate)}
-          </p>
-        </div>
 
-        {/* TLDR */}
-        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
-            Resumen (TLDR)
-          </h2>
-          <p className="whitespace-pre-line text-gray-700 dark:text-gray-300">
-            {sanitizedTldr}
-          </p>
-        </div>
+          {/* TLDR Summary */}
+          <ArticleSummary
+            tldr={sanitizedTldr}
+            features={sanitizedFeatures.slice(0, 5)}
+            accentColor={accentColor}
+          />
 
-        {/* Version Comparison */}
-        {release.previousVersion && (
-          <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-            <VersionComparison
-              currentVersion={release.version}
-              previousVersion={release.previousVersion}
-              technology={release.technology}
-              performanceMetrics={release.performanceMetrics}
-              bundleSizeImpact={release.bundleSizeImpact}
-            />
-          </div>
-        )}
-
-        {/* Description */}
-        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-            Descripción Detallada
-          </h2>
-          <p className="whitespace-pre-line text-gray-700 dark:text-gray-300">
-            {sanitizedDescription}
-          </p>
-        </div>
-
-        {/* Explicación con IA */}
-        <AIReleaseExplanation releaseId={release.id} />
-
-        {/* Breaking Changes */}
-        {release.breakingChange && sanitizedBreakingChanges.length > 0 && (
-          <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-            <BreakingChangesDetail
-              breakingChanges={sanitizedBreakingChanges}
-              codeExamples={release.codeExamples}
-            />
-          </div>
-        )}
-
-        {/* Migration Guide */}
-        {sanitizedMigrationSteps.length > 0 && (
-          <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-            <MigrationGuide
-              steps={sanitizedMigrationSteps}
-              estimatedTotalTime={release.estimatedMigrationTime}
-              complexity={release.migrationComplexity}
-            />
-          </div>
-        )}
-
-        {/* Ecosystem Impact */}
-        {release.ecosystemImpact && release.ecosystemImpact.length > 0 && (
-          <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-            <EcosystemImpact impacts={release.ecosystemImpact} />
-          </div>
-        )}
-
-        {/* Features, Improvements, Bug Fixes */}
-        <div className="grid gap-6 md:grid-cols-3">
-          {sanitizedFeatures.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Nuevas Características
-              </h3>
-              <ul className="space-y-2">
-                {sanitizedFeatures.map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
-                  >
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500"></span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+          {/* Version Comparison */}
+          {release.previousVersion && (
+            <div className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5 sm:p-6">
+              <VersionComparison
+                currentVersion={release.version}
+                previousVersion={release.previousVersion}
+                technology={release.technology}
+                performanceMetrics={release.performanceMetrics}
+                bundleSizeImpact={release.bundleSizeImpact}
+              />
             </div>
           )}
 
-          {sanitizedImprovements.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Mejoras
-              </h3>
-              <ul className="space-y-2">
-                {sanitizedImprovements.map((improvement, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
-                  >
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500"></span>
-                    {improvement}
-                  </li>
-                ))}
-              </ul>
+          {/* Description */}
+          {sanitizedDescription && (
+            <div className="mt-8">
+              <h2 className="mb-4 text-xl font-semibold text-[var(--color-text-primary)]">
+                Descripción Detallada
+              </h2>
+              <p className="whitespace-pre-line text-[var(--color-text-secondary)] leading-relaxed">
+                {sanitizedDescription}
+              </p>
             </div>
           )}
 
-          {sanitizedBugFixes.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Correcciones
-              </h3>
-              <ul className="space-y-2">
-                {sanitizedBugFixes.map((fix, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
-                  >
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-500"></span>
-                    {fix}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {/* Official Link — solo URLs http/https */}
-        {release.officialUrl &&
-          /^https?:\/\//i.test(release.officialUrl) && (
-          <div className="mt-8 text-center">
-            <a
-              href={release.officialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-            >
-              Ver Anuncio Oficial
-              <ExternalLink className="h-4 w-4" />
-            </a>
+          {/* AI Explanation */}
+          <div className="mt-8">
+            <AIReleaseExplanation releaseId={release.id} />
           </div>
-        )}
-      </div>
+
+          {/* Breaking Changes */}
+          {release.breakingChange && sanitizedBreakingChanges.length > 0 && (
+            <div className="mt-8 rounded-[var(--radius-lg)] border border-red-500/20 bg-[var(--color-bg-elevated)] p-5 sm:p-6">
+              <BreakingChangesDetail
+                breakingChanges={sanitizedBreakingChanges}
+                codeExamples={release.codeExamples}
+              />
+            </div>
+          )}
+
+          {/* Migration Guide */}
+          {sanitizedMigrationSteps.length > 0 && (
+            <div className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5 sm:p-6">
+              <MigrationGuide
+                steps={sanitizedMigrationSteps}
+                estimatedTotalTime={release.estimatedMigrationTime}
+                complexity={release.migrationComplexity}
+              />
+            </div>
+          )}
+
+          {/* Ecosystem Impact */}
+          {release.ecosystemImpact && release.ecosystemImpact.length > 0 && (
+            <div className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5 sm:p-6">
+              <EcosystemImpact impacts={release.ecosystemImpact} />
+            </div>
+          )}
+
+          {/* Features, Improvements, Bug Fixes */}
+          {(sanitizedFeatures.length > 0 ||
+            sanitizedImprovements.length > 0 ||
+            sanitizedBugFixes.length > 0) && (
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {sanitizedFeatures.length > 0 && (
+                <DetailList
+                  title="Nuevas Caracteristicas"
+                  items={sanitizedFeatures}
+                  dotColor="var(--color-brand)"
+                />
+              )}
+
+              {sanitizedImprovements.length > 0 && (
+                <DetailList
+                  title="Mejoras"
+                  items={sanitizedImprovements}
+                  dotColor="var(--color-success)"
+                />
+              )}
+
+              {sanitizedBugFixes.length > 0 && (
+                <DetailList
+                  title="Correcciones"
+                  items={sanitizedBugFixes}
+                  dotColor="var(--color-cat-devops)"
+                />
+              )}
+            </div>
+          )}
+
+          {/* Tags */}
+          {release.tags && release.tags.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-2">
+              {release.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-[var(--color-bg-secondary)] px-3 py-1 text-xs text-[var(--color-text-tertiary)]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Related Releases */}
+          <RelatedReleases releases={relatedReleases} />
+        </div>
+      </article>
+    </>
+  );
+}
+
+function DetailList({
+  title,
+  items,
+  dotColor,
+}: {
+  title: string;
+  items: string[];
+  dotColor: string;
+}) {
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5">
+      <h3 className="mb-3 text-sm font-semibold text-[var(--color-text-primary)]">
+        {title}
+      </h3>
+      <ul className="space-y-2">
+        {items.map((item, i) => (
+          <li
+            key={i}
+            className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]"
+          >
+            <span
+              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{ backgroundColor: dotColor }}
+            />
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

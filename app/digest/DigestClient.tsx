@@ -30,16 +30,16 @@ export default function DigestClient({ digests }: DigestClientProps) {
     <div>
       {/* Filtros */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        <div className="flex rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex rounded-[var(--radius-lg)] border border-[var(--color-border-default)]">
           {(["all", "weekly", "monthly"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === tab
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-              } ${tab === "all" ? "rounded-l-lg" : ""} ${tab === "monthly" ? "rounded-r-lg" : ""}`}
+                  ? "bg-[var(--color-brand)] text-white"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
+              } ${tab === "all" ? "rounded-l-[var(--radius-lg)]" : ""} ${tab === "monthly" ? "rounded-r-[var(--radius-lg)]" : ""}`}
             >
               {tab === "all" ? "Todos" : tab === "weekly" ? "Semanal" : "Mensual"}
             </button>
@@ -47,12 +47,12 @@ export default function DigestClient({ digests }: DigestClientProps) {
         </div>
 
         {selectedStacks.length > 0 && (
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
             <input
               type="checkbox"
               checked={myStackOnly}
               onChange={(e) => setMyStackOnly(e.target.checked)}
-              className="rounded border-gray-300"
+              className="rounded border-[var(--color-border-default)]"
             />
             Mi Stack ({selectedStacks.length})
           </label>
@@ -61,8 +61,8 @@ export default function DigestClient({ digests }: DigestClientProps) {
 
       {/* Lista de digests */}
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-secondary)] p-12 text-center">
+          <p className="text-[var(--color-text-tertiary)]">
             {digests.length === 0
               ? "No hay digests disponibles aún. Se generarán automáticamente cada semana."
               : "No se encontraron digests con los filtros seleccionados."}

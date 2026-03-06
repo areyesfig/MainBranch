@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import Navbar from "@/components/ui/Navbar";
-import Footer from "@/components/ui/Footer";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { BookmarkProvider } from "@/contexts/BookmarkContext";
+import CommandPaletteLoader from "@/components/ds/CommandPaletteLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -94,13 +96,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-[var(--radius-md)] focus:bg-[var(--color-brand)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white focus:shadow-lg"
+        >
+          Saltar al contenido principal
+        </a>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NotificationProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
+            <BookmarkProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main id="main-content" className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <CommandPaletteLoader />
+            </BookmarkProvider>
           </NotificationProvider>
         </ThemeProvider>
       </body>

@@ -48,6 +48,10 @@ const NO_TRUNCATE = 100_000;
 export function sanitizeReleaseText(text: string | undefined | null, maxLength = 280): string {
   if (!text || typeof text !== "string") return "";
   let out = text
+    // Quitar comentarios HTML <!-- ... -->
+    .replace(/<!--[\s\S]*?-->/g, "")
+    // Quitar tags HTML (<p>, <code>, <a href="...">, etc.)
+    .replace(/<[^>]+>/g, "")
     // Quitar encabezados markdown (###, ##, #)
     .replace(/^#{1,6}\s*/gm, "")
     // Quitar enlaces markdown [texto](url) -> texto

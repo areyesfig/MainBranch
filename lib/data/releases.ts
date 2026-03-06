@@ -178,6 +178,30 @@ export async function getReleasesSortedByImpact(): Promise<ReleaseNote[]> {
 }
 
 /**
+ * Obtiene releases relacionados (misma tecnología o categoría, excluyendo el actual)
+ */
+export async function getRelatedReleases(
+  release: ReleaseNote,
+  limit = 4
+): Promise<ReleaseNote[]> {
+  const all = await getReleases();
+  const candidates = all.filter((r) => r.id !== release.id);
+
+  // Priorizar misma tecnología, luego misma categoría
+  const sameTech = candidates.filter(
+    (r) => r.technology === release.technology
+  );
+  const sameCategory = candidates.filter(
+    (r) =>
+      r.category === release.category &&
+      r.technology !== release.technology
+  );
+
+  const result = [...sameTech, ...sameCategory];
+  return result.slice(0, limit);
+}
+
+/**
  * Invalida el caché en memoria y en Redis (llamar después de sync)
  */
 export function invalidateReleasesCache() {

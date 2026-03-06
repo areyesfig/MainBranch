@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import ReleaseCard from "@/components/news/ReleaseCard";
-import CategoryFilter from "@/components/news/CategoryFilter";
-import StackFilter from "@/components/news/StackFilter";
-import SearchBar from "@/components/news/SearchBar";
-import { getUniqueStacks, getUniqueCategories } from "@/lib/mockData";
-import { getCategoryLabel } from "@/lib/categories";
-import { getStackLabel } from "@/lib/stackLabels";
+import { Search, ArrowUpDown } from "lucide-react";
+import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
+import SignalCard from "@/components/feed/SignalCard";
+import ViewToggle from "@/components/feed/ViewToggle";
+import CategoryChipBar from "@/components/layout/CategoryChipBar";
 import { isPlaceholderVersion } from "@/lib/utils";
 import type { ReleaseNote } from "@/types/release";
+
+type ViewMode = "signal" | "flow";
 
 function searchInReleases(releases: ReleaseNote[], query: string): ReleaseNote[] {
   if (!query.trim()) return releases;
@@ -36,24 +36,85 @@ interface ReleasesClientProps {
   initialReleases: ReleaseNote[];
 }
 
-export default function ReleasesClient({
-  initialReleases,
-}: ReleasesClientProps) {
+export default function ReleasesClient({ initialReleases }: ReleasesClientProps) {
   const searchParams = useSearchParams();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    () => searchParams.get("category")
-  );
-  const [selectedStack, setSelectedStack] = useState<string | null>(
-    () => searchParams.get("stack")
+  const router = useRouter();
+
+  const [category, setCategory] = useState<string>(
+    () => searchParams.get("category") ?? "all"
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "impact">("recent");
-  const [releases] = useState(initialReleases);
+  const [viewMode, setViewMode] = useState<ViewMode>("signal");
+  const [visibleCount, setVisibleCount] = useState(20);
   const [compareMode, setCompareMode] = useState(false);
   const [compareSelected, setCompareSelected] = useState<string[]>([]);
-  const router = useRouter();
-  const stacks = getUniqueStacks(releases);
-  const categories = getUniqueCategories(releases);
+
+  // Restore view mode
+  useEffect(() => {
+    const saved = localStorage.getItem("mb-view-mode");
+    if (saved === "signal" || saved === "flow") setViewMode(saved);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("mb-view-mode", viewMode);
+  }, [viewMode]);
+
+  // Sync URL params
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat) setCategory(cat);
+  }, [searchParams]);
+
+  const releases = useMemo(
+    () => initialReleases.filter((r) => !isPlaceholderVersion(r.version)),
+    [initialReleases]
+  );
+
+  // Category counts
+  const counts = useMemo(() => {
+    const map: Record<string, number> = { all: releases.length };
+    for (const r of releases) {
+      if (r.category) {
+        map[r.category] = (map[r.category] ?? 0) + 1;
+      }
+    }
+    return map;
+  }, [releases]);
+
+  const filtered = useMemo(() => {
+    let result = searchInReleases(releases, searchQuery);
+    if (category !== "all") {
+      result = result.filter((r) => r.category === category);
+    }
+    if (sortBy === "impact") {
+      result = [...result].sort(
+        (a, b) => (b.impactScore ?? 0) - (a.impactScore ?? 0)
+      );
+    }
+    return result;
+  }, [releases, category, searchQuery, sortBy]);
+
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const { activeIndex } = useKeyboardNavigation({
+    itemCount: visible.length,
+    onSelect: (index) => {
+      const release = visible[index];
+      if (release) router.push(`/releases/${release.id}`);
+    },
+  });
+
+  // Scroll active card into view
+  useEffect(() => {
+    if (activeIndex >= 0 && listRef.current) {
+      const cards = listRef.current.children;
+      const card = cards[activeIndex] as HTMLElement | undefined;
+      card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [activeIndex]);
 
   const handleCompareSelect = useCallback((id: string) => {
     setCompareSelected((prev) => {
@@ -69,156 +130,154 @@ export default function ReleasesClient({
     }
   }, [compareSelected, router]);
 
-  const toggleCompareMode = useCallback(() => {
-    setCompareMode((prev) => {
-      if (prev) setCompareSelected([]);
-      return !prev;
-    });
-  }, []);
-
-  useEffect(() => {
-    const category = searchParams.get("category");
-    const stack = searchParams.get("stack");
-    if (category) queueMicrotask(() => setSelectedCategory(category));
-    if (stack) queueMicrotask(() => setSelectedStack(stack));
-  }, [searchParams]);
-
-  const filteredReleases = useMemo(() => {
-    let result = searchInReleases(releases, searchQuery);
-    result = result.filter((r) => !isPlaceholderVersion(r.version));
-    if (selectedCategory) {
-      result = result.filter((r) => r.category === selectedCategory);
-    }
-    if (selectedStack) {
-      result = result.filter((r) => r.stack === selectedStack);
-    }
-    if (sortBy === "impact") {
-      result = [...result].sort(
-        (a, b) => (b.impactScore ?? 0) - (a.impactScore ?? 0)
-      );
-    }
-    return result;
-  }, [releases, selectedCategory, selectedStack, searchQuery, sortBy]);
-
   return (
-    <div className="bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="animate-fade-in py-8 sm:py-12">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Lanzamientos Tecnológicos
-            </h1>
-            <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-              Explora los últimos lanzamientos y actualizaciones de las tecnologías más importantes
-            </p>
-          </div>
-          <button
-            onClick={toggleCompareMode}
-            className={`mt-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              compareMode
-                ? "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                : "border border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-            }`}
-          >
-            {compareMode ? "Cancelar comparación" : "Comparar releases"}
-          </button>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+            Releases
+          </h1>
+          <p className="mt-2 text-[var(--color-text-tertiary)]">
+            Explora los últimos lanzamientos y actualizaciones
+          </p>
         </div>
 
         {/* Search */}
         <div className="mb-6">
-          <SearchBar onSearch={setSearchQuery} placeholder="Buscar por tecnología, IA, características, breaking changes..." />
-        </div>
-
-        {/* Category Filter */}
-        <div className="mb-6">
-          <CategoryFilter
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
-        </div>
-
-        {/* Stack Filter */}
-        <div className="mb-8">
-          <StackFilter
-            stacks={stacks}
-            selectedStack={selectedStack}
-            onStackChange={setSelectedStack}
-          />
-        </div>
-
-        {/* Sort + Results Count */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Mostrando {filteredReleases.length} lanzamiento{filteredReleases.length !== 1 ? "s" : ""}
-            {selectedCategory && ` • categoría ${getCategoryLabel(selectedCategory)}`}
-            {selectedStack && ` • ${getStackLabel(selectedStack)}`}
-            {searchQuery && ` • búsqueda: "${searchQuery}"`}
-          </p>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Ordenar:</span>
-            <button
-              onClick={() => setSortBy("recent")}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                sortBy === "recent"
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-              }`}
-            >
-              Más recientes
-            </button>
-            <button
-              onClick={() => setSortBy("impact")}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                sortBy === "impact"
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-              }`}
-            >
-              Mayor impacto
-            </button>
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por tecnología, features, breaking changes..."
+              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] py-2.5 pl-10 pr-4 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] transition-colors focus:border-[var(--color-brand)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]/20"
+              aria-label="Buscar releases"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+              >
+                Limpiar
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Releases Grid */}
-        {filteredReleases.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredReleases.map((release) => (
-              <ReleaseCard
-                key={release.id}
-                release={release}
-                compareMode={compareMode}
-                isSelected={compareSelected.includes(release.id)}
-                onCompareSelect={handleCompareSelect}
-              />
+        {/* Category filter */}
+        <CategoryChipBar
+          activeCategory={category}
+          onCategoryChange={(c) => {
+            setCategory(c);
+            setVisibleCount(20);
+          }}
+          counts={counts}
+        />
+
+        {/* Toolbar */}
+        <div className="mt-6 mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-[var(--color-text-tertiary)]">
+              {filtered.length} release{filtered.length !== 1 ? "s" : ""}
+            </p>
+
+            {/* Sort */}
+            <div className="flex items-center gap-1 rounded-[var(--radius-md)] border border-[var(--color-border-default)] p-0.5">
+              <button
+                onClick={() => setSortBy("recent")}
+                className={`rounded-[var(--radius-sm)] px-3 py-1 text-xs font-medium transition-colors ${
+                  sortBy === "recent"
+                    ? "bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]"
+                    : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]"
+                }`}
+              >
+                Recientes
+              </button>
+              <button
+                onClick={() => setSortBy("impact")}
+                className={`rounded-[var(--radius-sm)] px-3 py-1 text-xs font-medium transition-colors ${
+                  sortBy === "impact"
+                    ? "bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]"
+                    : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]"
+                }`}
+              >
+                Impact
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                setCompareMode((prev) => {
+                  if (prev) setCompareSelected([]);
+                  return !prev;
+                });
+              }}
+              className={`rounded-[var(--radius-md)] px-3 py-1.5 text-xs font-medium transition-colors ${
+                compareMode
+                  ? "bg-[var(--color-brand)] text-white"
+                  : "border border-[var(--color-border-default)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
+              }`}
+            >
+              {compareMode ? "Cancelar" : "Comparar"}
+            </button>
+            <ViewToggle mode={viewMode} onChange={setViewMode} />
+          </div>
+        </div>
+
+        {/* Release list */}
+        {viewMode === "signal" ? (
+          <div ref={listRef} className="divide-y divide-[var(--color-border-subtle)] rounded-[var(--radius-lg)] border border-[var(--color-border-default)] overflow-hidden">
+            {visible.map((r, i) => (
+              <SignalCard key={r.id} release={r} mode="signal" index={i} isActive={i === activeIndex} />
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-gray-800 dark:bg-gray-900">
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              No se encontraron lanzamientos para este filtro.
-            </p>
+          <div ref={listRef} className="space-y-4">
+            {visible.map((r, i) => (
+              <SignalCard key={r.id} release={r} mode="flow" index={i} isActive={i === activeIndex} />
+            ))}
           </div>
         )}
 
-        {/* Barra flotante de comparación */}
+        {visible.length === 0 && (
+          <p className="py-12 text-center text-sm text-[var(--color-text-tertiary)]">
+            No se encontraron releases para este filtro.
+          </p>
+        )}
+
+        {hasMore && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setVisibleCount((c) => c + 20)}
+              className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-5 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
+            >
+              Cargar más
+            </button>
+          </div>
+        )}
+
+        {/* Compare floating bar */}
         {compareMode && compareSelected.length > 0 && (
-          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-gray-200 bg-white px-6 py-3 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-6 py-3 shadow-[var(--shadow-lg)]">
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-[var(--color-text-tertiary)]">
                 {compareSelected.length}/2 seleccionados
               </span>
               <button
                 onClick={handleCompareNavigate}
                 disabled={compareSelected.length < 2}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+                className="rounded-[var(--radius-md)] bg-[var(--color-brand)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-hover)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Comparar
               </button>
               <button
                 onClick={() => setCompareSelected([])}
-                className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
               >
                 Limpiar
               </button>

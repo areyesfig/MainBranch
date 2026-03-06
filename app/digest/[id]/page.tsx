@@ -47,10 +47,10 @@ export default async function DigestDetailPage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="animate-fade-in mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       <Link
         href="/digest"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
       >
         <ArrowLeft className="h-4 w-4" />
         Volver a Digests

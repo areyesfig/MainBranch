@@ -37,9 +37,6 @@ const severityConfig = {
   },
 };
 
-/**
- * Componente para mostrar alertas de seguridad destacadas
- */
 export default function SecurityAlerts({ releases }: SecurityAlertsProps) {
   const releasesWithAlerts = releases.filter(
     (r) => r.securityAlerts && r.securityAlerts.length > 0
@@ -63,7 +60,7 @@ export default function SecurityAlerts({ releases }: SecurityAlertsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
+      <h2 className="flex items-center gap-2 text-2xl font-bold text-[var(--color-text-primary)]">
         <ShieldAlert className="h-6 w-6 text-red-600 dark:text-red-400" />
         Alertas de Seguridad
       </h2>
@@ -75,7 +72,7 @@ export default function SecurityAlerts({ releases }: SecurityAlertsProps) {
             <Link
               key={`${alert.release.id}-${index}`}
               href={`/releases/${alert.release.id}`}
-              className={`block rounded-lg border-2 p-4 transition-colors hover:opacity-90 ${config.bgColor} ${config.borderColor}`}
+              className={`block rounded-[var(--radius-lg)] border-2 p-4 transition-colors hover:opacity-90 ${config.bgColor} ${config.borderColor}`}
             >
               <div className="flex items-start gap-4">
                 <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${config.textColor}`} />
@@ -87,18 +84,18 @@ export default function SecurityAlerts({ releases }: SecurityAlertsProps) {
                       {config.label}
                     </span>
                     {alert.cve && (
-                      <code className="text-xs text-gray-600 dark:text-gray-400">
+                      <code className="text-xs text-[var(--color-text-secondary)]">
                         {alert.cve}
                       </code>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-[var(--color-text-primary)]">
                     {alert.title}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+                  <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
                     {alert.description}
                   </p>
-                  <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <p className="mt-2 text-sm font-medium text-[var(--color-text-secondary)]">
                     {alert.release.technology} {alert.release.version} • Ver
                     detalles
                   </p>

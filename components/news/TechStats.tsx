@@ -23,15 +23,15 @@ function StatCard({
   subtitle?: string;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4">
+      <p className="text-sm font-medium text-[var(--color-text-tertiary)]">
         {title}
       </p>
-      <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+      <p className="mt-1 text-2xl font-bold text-[var(--color-text-primary)]">
         {value}
       </p>
       {subtitle && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-xs text-[var(--color-text-tertiary)]">
           {subtitle}
         </p>
       )}
@@ -47,10 +47,10 @@ function ImpactBar({ score }: { score: number }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl font-bold text-gray-900 dark:text-white">
+      <span className="text-2xl font-bold text-[var(--color-text-primary)]">
         {score}
       </span>
-      <div className="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+      <div className="h-2 flex-1 rounded-full bg-[var(--color-bg-tertiary)]">
         <div
           className={`h-2 rounded-full ${color}`}
           style={{ width: `${width}%` }}
@@ -74,7 +74,7 @@ export default function TechStats({
   return (
     <div>
       {/* Resumen textual */}
-      <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
+      <div className="mb-6 rounded-[var(--radius-lg)] border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
         <p className="text-sm text-blue-800 dark:text-blue-200">
           <strong>{label}</strong> tuvo{" "}
           <strong>{recentCount} release{recentCount !== 1 ? "s" : ""}</strong> en
@@ -116,8 +116,8 @@ export default function TechStats({
           }
           subtitle="Promedio entre releases"
         />
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4">
+          <p className="text-sm font-medium text-[var(--color-text-tertiary)]">
             Impact Score Promedio
           </p>
           <div className="mt-1">
@@ -128,7 +128,7 @@ export default function TechStats({
 
       {/* Último release */}
       {latestVersion && latestDate && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-secondary)]">
           <span>Último release:</span>
           <Badge variant="blue" size="sm">
             v{latestVersion}

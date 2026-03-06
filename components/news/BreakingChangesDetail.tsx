@@ -15,9 +15,6 @@ interface BreakingChangesDetailProps {
   codeExamples?: CodeExample[];
 }
 
-/**
- * Componente para mostrar detalles de breaking changes con ejemplos de código
- */
 export default function BreakingChangesDetail({
   breakingChanges,
   codeExamples = [],
@@ -37,7 +34,7 @@ export default function BreakingChangesDetail({
   return (
     <div className="space-y-6">
       {/* Breaking Changes List */}
-      <div className="rounded-lg border-2 border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/30">
+      <div className="rounded-[var(--radius-lg)] border-2 border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/30">
         <div className="mb-4 flex items-center gap-2">
           <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
           <h3 className="text-xl font-bold text-red-900 dark:text-red-100">
@@ -61,29 +58,29 @@ export default function BreakingChangesDetail({
       {codeExamples.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center gap-2">
-            <Code2 className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <Code2 className="h-5 w-5 text-[var(--color-text-secondary)]" />
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
               Ejemplos de Código
             </h3>
           </div>
           {codeExamples.map((example, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
+              className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-default)]"
             >
-              <div className="bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+              <div className="bg-[var(--color-bg-secondary)] px-4 py-2 text-sm font-semibold text-[var(--color-text-secondary)]">
                 {example.title}
               </div>
               <div className="grid gap-0 md:grid-cols-2">
                 {/* Before */}
-                <div className="border-r border-gray-200 dark:border-gray-800">
+                <div className="border-r border-[var(--color-border-default)]">
                   <div className="flex items-center justify-between bg-red-50 px-4 py-2 dark:bg-red-950/20">
                     <span className="text-sm font-medium text-red-700 dark:text-red-300">
                       Antes
                     </span>
                     <button
                       onClick={() => copyToClipboard(example.before, index * 2)}
-                      className="rounded p-1 text-gray-600 transition-colors hover:bg-red-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-red-900/40"
+                      className="rounded p-1 text-[var(--color-text-secondary)] transition-colors hover:bg-red-100 hover:text-[var(--color-text-primary)] dark:hover:bg-red-900/40"
                       title="Copiar código"
                     >
                       {copiedIndex === index * 2 ? (
@@ -93,8 +90,8 @@ export default function BreakingChangesDetail({
                       )}
                     </button>
                   </div>
-                  <pre className="overflow-x-auto bg-white p-4 text-sm dark:bg-gray-950">
-                    <code className="text-gray-800 dark:text-gray-200">
+                  <pre className="overflow-x-auto bg-[var(--color-bg-elevated)] p-4 text-sm">
+                    <code className="text-[var(--color-text-secondary)]">
                       {example.before}
                     </code>
                   </pre>
@@ -108,7 +105,7 @@ export default function BreakingChangesDetail({
                     </span>
                     <button
                       onClick={() => copyToClipboard(example.after, index * 2 + 1)}
-                      className="rounded p-1 text-gray-600 transition-colors hover:bg-green-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-green-900/40"
+                      className="rounded p-1 text-[var(--color-text-secondary)] transition-colors hover:bg-green-100 hover:text-[var(--color-text-primary)] dark:hover:bg-green-900/40"
                       title="Copiar código"
                     >
                       {copiedIndex === index * 2 + 1 ? (
@@ -118,8 +115,8 @@ export default function BreakingChangesDetail({
                       )}
                     </button>
                   </div>
-                  <pre className="overflow-x-auto bg-white p-4 text-sm dark:bg-gray-950">
-                    <code className="text-gray-800 dark:text-gray-200">
+                  <pre className="overflow-x-auto bg-[var(--color-bg-elevated)] p-4 text-sm">
+                    <code className="text-[var(--color-text-secondary)]">
                       {example.after}
                     </code>
                   </pre>

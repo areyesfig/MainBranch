@@ -11,10 +11,7 @@ interface EcosystemImpactProps {
   impacts: EcosystemImpact[];
 }
 
-/**
- * Componente para mostrar el impacto en otras tecnologías del ecosistema
- */
-export default function EcosystemImpact({ impacts }: EcosystemImpactProps) {
+export default function EcosystemImpactComponent({ impacts }: EcosystemImpactProps) {
   const impactConfig = {
     required: {
       icon: XCircle,
@@ -39,19 +36,19 @@ export default function EcosystemImpact({ impacts }: EcosystemImpactProps) {
     },
     optional: {
       icon: Info,
-      color: "text-gray-600 dark:text-gray-400",
-      bgColor: "bg-gray-50 dark:bg-gray-900",
-      borderColor: "border-gray-200 dark:border-gray-800",
+      color: "text-[var(--color-text-secondary)]",
+      bgColor: "bg-[var(--color-bg-secondary)]",
+      borderColor: "border-[var(--color-border-default)]",
       label: "Opcional",
     },
   };
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+      <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
         Impacto en el Ecosistema
       </h3>
-      <p className="text-gray-600 dark:text-gray-400">
+      <p className="text-[var(--color-text-secondary)]">
         Este lanzamiento afecta las siguientes tecnologías relacionadas:
       </p>
       <div className="grid gap-4 md:grid-cols-2">
@@ -62,11 +59,11 @@ export default function EcosystemImpact({ impacts }: EcosystemImpactProps) {
           return (
             <div
               key={index}
-              className={`rounded-lg border-2 p-4 ${config.bgColor} ${config.borderColor}`}
+              className={`rounded-[var(--radius-lg)] border-2 p-4 ${config.bgColor} ${config.borderColor}`}
             >
               <div className="mb-3 flex items-center gap-2">
                 <Icon className={`h-5 w-5 ${config.color}`} />
-                <h4 className="font-semibold text-gray-900 dark:text-white">
+                <h4 className="font-semibold text-[var(--color-text-primary)]">
                   {impact.technology}
                 </h4>
                 <span
@@ -75,11 +72,11 @@ export default function EcosystemImpact({ impacts }: EcosystemImpactProps) {
                   {config.label}
                 </span>
               </div>
-              <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
+              <p className="mb-2 text-sm text-[var(--color-text-secondary)]">
                 {impact.description}
               </p>
               {impact.minVersion && (
-                <div className="mt-2 rounded-md bg-white/50 px-2 py-1 text-xs font-mono text-gray-700 dark:bg-gray-800/50 dark:text-gray-300">
+                <div className="mt-2 rounded-[var(--radius-md)] bg-white/50 px-2 py-1 text-xs font-mono text-[var(--color-text-secondary)] dark:bg-[var(--color-bg-tertiary)]">
                   Versión mínima: {impact.minVersion}
                 </div>
               )}

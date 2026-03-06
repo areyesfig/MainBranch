@@ -74,20 +74,20 @@ export default function ShareButton({ title, url, technology, version, shareText
   }
 
   const itemClass =
-    "flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700";
+    "flex w-full items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]";
 
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
         aria-label="Compartir"
-        className="flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-blue-950 dark:hover:text-blue-400"
+        className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] px-2.5 py-1 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
       >
         <Share2 className="h-3.5 w-3.5" />
       </button>
 
       {open && (
-        <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] py-1 shadow-lg">
           <button onClick={shareX} className={itemClass}>
             <XIcon />
             Compartir en X

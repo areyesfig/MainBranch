@@ -17,27 +17,27 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+    <div className="animate-fade-in py-16">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Link
             href="/"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-sm font-medium text-[var(--color-brand)] hover:opacity-80"
           >
-            ← Volver al inicio
+            &larr; Volver al inicio
           </Link>
         </div>
 
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
           Términos de uso
         </h1>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-[var(--color-text-tertiary)]">
           Última actualización: marzo 2025
         </p>
 
-        <div className="mt-10 space-y-8 text-gray-700 dark:text-gray-300">
+        <div className="mt-10 space-y-8 text-[var(--color-text-secondary)]">
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               1. Aceptación
             </h2>
             <p className="mt-2">
@@ -47,7 +47,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               2. Descripción del servicio
             </h2>
             <p className="mt-2">
@@ -59,7 +59,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               3. Uso permitido
             </h2>
             <p className="mt-2">
@@ -76,7 +76,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               4. Contenido y precisión
             </h2>
             <p className="mt-2">
@@ -90,7 +90,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               5. Propiedad intelectual y enlaces
             </h2>
             <p className="mt-2">
@@ -104,7 +104,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               6. Limitación de responsabilidad
             </h2>
             <p className="mt-2">
@@ -117,7 +117,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               7. Newsletter y comunicaciones
             </h2>
             <p className="mt-2">
@@ -125,7 +125,7 @@ export default function TermsPage() {
               electrónicos de Main Branch. Puedes darte de baja en cualquier momento
               mediante el enlace incluido en cada correo. El tratamiento de tus datos
               se rige por nuestra{" "}
-              <Link href="/privacy" className="text-blue-600 underline hover:no-underline dark:text-blue-400">
+              <Link href="/privacy" className="text-[var(--color-brand)] underline hover:no-underline">
                 Política de privacidad
               </Link>
               .
@@ -133,7 +133,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               8. Modificaciones
             </h2>
             <p className="mt-2">
@@ -146,7 +146,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               9. Ley aplicable y resolución de conflictos
             </h2>
             <p className="mt-2">
@@ -158,13 +158,13 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
               10. Contacto
             </h2>
             <p className="mt-2">
               Para consultas sobre estos términos puedes contactarnos a través de la
               información publicada en el sitio (por ejemplo, en la página{" "}
-              <Link href="/about" className="text-blue-600 underline hover:no-underline dark:text-blue-400">
+              <Link href="/about" className="text-[var(--color-brand)] underline hover:no-underline">
                 Acerca de
               </Link>
               ).
@@ -172,12 +172,12 @@ export default function TermsPage() {
           </section>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+        <div className="mt-12 pt-8 border-t border-[var(--color-border-default)]">
           <Link
             href="/"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-sm font-medium text-[var(--color-brand)] hover:opacity-80"
           >
-            ← Volver al inicio
+            &larr; Volver al inicio
           </Link>
         </div>
       </div>

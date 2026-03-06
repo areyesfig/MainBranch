@@ -17,9 +17,6 @@ interface MigrationGuideProps {
   complexity?: "low" | "medium" | "high" | "critical";
 }
 
-/**
- * Componente interactivo para guía de migración con checklist
- */
 export default function MigrationGuide({
   steps,
   estimatedTotalTime,
@@ -56,9 +53,9 @@ export default function MigrationGuide({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">
             Guía de Migración
           </h3>
           {complexity && (
@@ -73,23 +70,23 @@ export default function MigrationGuide({
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-[var(--color-text-secondary)]">
               Progreso de migración
             </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
+            <span className="font-semibold text-[var(--color-text-primary)]">
               {completedSteps.size} / {steps.length} pasos
             </span>
           </div>
-          <div className="h-3 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+          <div className="h-3 overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
             <div
-              className="h-full bg-blue-600 transition-all duration-300 dark:bg-blue-500"
+              className="h-full bg-[var(--color-brand)] transition-all duration-300"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
 
         {estimatedTotalTime && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
             <Clock className="h-4 w-4" />
             <span>
               Tiempo estimado total: <strong>{estimatedTotalTime} horas</strong>
@@ -105,10 +102,10 @@ export default function MigrationGuide({
           return (
             <div
               key={step.step}
-              className={`rounded-lg border-2 p-6 transition-all ${
+              className={`rounded-[var(--radius-lg)] border-2 p-6 transition-all ${
                 isCompleted
                   ? "border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
-                  : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+                  : "border-[var(--color-border-default)] bg-[var(--color-bg-elevated)]"
               }`}
             >
               <div className="flex items-start gap-4">
@@ -120,7 +117,7 @@ export default function MigrationGuide({
                   {isCompleted ? (
                     <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                   ) : (
-                    <Circle className="h-6 w-6 text-gray-400" />
+                    <Circle className="h-6 w-6 text-[var(--color-text-tertiary)]" />
                   )}
                 </button>
                 <div className="flex-1">
@@ -129,7 +126,7 @@ export default function MigrationGuide({
                       Paso {step.step}
                     </span>
                     {step.estimatedTime && (
-                      <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
                         <Clock className="h-3 w-3" />
                         {step.estimatedTime}
                       </span>
@@ -139,7 +136,7 @@ export default function MigrationGuide({
                     className={`mb-2 text-lg font-semibold ${
                       isCompleted
                         ? "text-green-900 line-through dark:text-green-200"
-                        : "text-gray-900 dark:text-white"
+                        : "text-[var(--color-text-primary)]"
                     }`}
                   >
                     {step.title}
@@ -148,21 +145,21 @@ export default function MigrationGuide({
                     className={`mb-4 ${
                       isCompleted
                         ? "text-green-700 dark:text-green-300"
-                        : "text-gray-600 dark:text-gray-400"
+                        : "text-[var(--color-text-secondary)]"
                     }`}
                   >
                     {step.description}
                   </p>
                   {step.codeExample && (
-                    <div className="mt-4 rounded-md border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
-                      <div className="flex items-center gap-2 border-b border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-                        <Code2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-secondary)]">
+                      <div className="flex items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)] px-4 py-2">
+                        <Code2 className="h-4 w-4 text-[var(--color-text-secondary)]" />
+                        <span className="text-xs font-medium text-[var(--color-text-secondary)]">
                           Ejemplo de código
                         </span>
                       </div>
                       <pre className="overflow-x-auto p-4 text-sm">
-                        <code className="text-gray-800 dark:text-gray-200">
+                        <code className="text-[var(--color-text-secondary)]">
                           {step.codeExample}
                         </code>
                       </pre>

@@ -41,19 +41,19 @@ export default async function TechIndexPage() {
   );
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="animate-fade-in py-8 sm:py-12">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
             Tecnologías
           </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-lg text-[var(--color-text-secondary)]">
             Explora el dashboard de cada tecnología con estadísticas, timeline y breaking changes.
           </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {stacks.map((slug) => {
+          {stacks.map((slug, i) => {
             const count = countByStack[slug] ?? 0;
             const breaking = breakingByStack[slug] ?? 0;
 
@@ -61,9 +61,10 @@ export default async function TechIndexPage() {
               <Link
                 key={slug}
                 href={`/tech/${slug}`}
-                className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-700"
+                className="group animate-slide-up rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4 transition-all hover:-translate-y-0.5 hover:border-[var(--color-brand)] hover:shadow-md"
+                style={i < 20 ? { animationDelay: `${i * 50}ms` } : undefined}
               >
-                <h2 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                <h2 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-brand)]">
                   {STACK_LABELS[slug]}
                 </h2>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -84,3 +85,4 @@ export default async function TechIndexPage() {
     </div>
   );
 }
+

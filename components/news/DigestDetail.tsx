@@ -18,10 +18,10 @@ export default function DigestDetail({ digest }: DigestDetailProps) {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 border-b border-gray-200 pb-6 dark:border-gray-800">
+      <div className="mb-8 border-b border-[var(--color-border-default)] pb-6">
         <div className="mb-3 flex items-center gap-3">
           <span
-            className={`rounded-md px-3 py-1 text-sm font-semibold ${
+            className={`rounded-[var(--radius-md)] px-3 py-1 text-sm font-semibold ${
               digest.period === "weekly"
                 ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
                 : "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200"
@@ -31,11 +31,11 @@ export default function DigestDetail({ digest }: DigestDetailProps) {
           </span>
         </div>
 
-        <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="mb-4 text-3xl font-bold text-[var(--color-text-primary)]">
           Resumen {periodLabel}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-secondary)]">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             <span>{dateRange}</span>
@@ -56,7 +56,7 @@ export default function DigestDetail({ digest }: DigestDetailProps) {
             {digest.technologies.map((tech) => (
               <span
                 key={tech}
-                className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                className="rounded-full bg-[var(--color-bg-tertiary)] px-3 py-1 text-sm text-[var(--color-text-secondary)]"
               >
                 {tech}
               </span>
@@ -66,7 +66,7 @@ export default function DigestDetail({ digest }: DigestDetailProps) {
       </div>
 
       {/* Contenido Markdown */}
-      <div className="digest-content text-gray-800 dark:text-gray-200 [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-900 dark:[&_h3]:text-white [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_p]:leading-relaxed [&_strong]:font-semibold [&_strong]:text-gray-900 dark:[&_strong]:text-white [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6">
+      <div className="digest-content text-[var(--color-text-secondary)] [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[var(--color-text-primary)] [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-[var(--color-text-primary)] [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_p]:leading-relaxed [&_strong]:font-semibold [&_strong]:text-[var(--color-text-primary)] [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6">
         <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{digest.content}</ReactMarkdown>
       </div>
     </div>
