@@ -7,17 +7,6 @@ import { formatRelativeTime } from "@/lib/formatTime";
 import { sanitizeReleaseText } from "@/lib/utils";
 import BookmarkButton from "@/components/ds/BookmarkButton";
 
-const CATEGORY_BORDER: Record<string, string> = {
-  frontend: "border-l-blue-500",
-  backend: "border-l-green-500",
-  "ai-ml": "border-l-violet-500",
-  llms: "border-l-purple-500",
-  devops: "border-l-orange-500",
-  mobile: "border-l-cyan-500",
-  databases: "border-l-amber-500",
-  tools: "border-l-slate-500",
-};
-
 const CATEGORY_COLORS: Record<string, string> = {
   frontend: "var(--color-cat-frontend)",
   backend: "var(--color-cat-backend)",
@@ -37,15 +26,15 @@ interface SignalCardProps {
 }
 
 function SignalMode({ release, isActive }: { release: ReleaseNote; isActive?: boolean }) {
-  const borderClass = CATEGORY_BORDER[release.category ?? ""] ?? "border-l-gray-300 dark:border-l-gray-700";
   const catColor = CATEGORY_COLORS[release.category ?? ""];
 
   return (
     <Link
       href={`/releases/${release.id}`}
-      className={`group flex items-start gap-4 border-l-2 ${borderClass} bg-[var(--color-bg-elevated)] px-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)] ${
+      className={`group gradient-border-left flex items-start gap-4 bg-[var(--color-bg-elevated)] pl-5 pr-4 py-3 transition-colors hover:bg-[var(--color-bg-secondary)] ${
         isActive ? "ring-2 ring-inset ring-[var(--color-brand)] bg-[var(--color-bg-secondary)]" : ""
       }`}
+      style={{ "--accent-color": catColor ?? "var(--color-brand)" } as React.CSSProperties}
     >
       {/* Main content */}
       <div className="flex-1 min-w-0">
@@ -90,17 +79,18 @@ function SignalMode({ release, isActive }: { release: ReleaseNote; isActive?: bo
 }
 
 function FlowMode({ release, isActive }: { release: ReleaseNote; isActive?: boolean }) {
-  const borderClass = CATEGORY_BORDER[release.category ?? ""] ?? "border-l-gray-300 dark:border-l-gray-700";
   const catColor = CATEGORY_COLORS[release.category ?? ""];
 
   return (
     <Link
       href={`/releases/${release.id}`}
-      className={`group block border-l-2 ${borderClass} rounded-[var(--radius-lg)] border bg-[var(--color-bg-elevated)] p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)] hover:border-[var(--color-border-strong)] ${
+      className={`group block gradient-border-top card-glow rounded-[var(--radius-lg)] border bg-[var(--color-bg-elevated)] p-5 transition-all ${
         isActive
           ? "border-[var(--color-brand)] ring-2 ring-[var(--color-brand)]"
           : "border-[var(--color-border-default)]"
       }`}
+      style={{ "--accent-color": catColor ?? "var(--color-brand)" } as React.CSSProperties}
+      data-category={release.category ?? ""}
     >
       {/* Header */}
       <div className="flex items-center justify-between">

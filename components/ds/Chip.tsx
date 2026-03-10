@@ -13,14 +13,27 @@ export default function Chip({ label, active = false, count, color, onClick }: C
     "inline-flex items-center gap-1.5 rounded-[var(--radius-full)] px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer select-none";
 
   const stateClasses = active
-    ? "bg-[var(--color-text-primary)] text-[var(--color-text-inverse)]"
+    ? color
+      ? "" // dynamic style applied below
+      : "bg-[var(--color-text-primary)] text-[var(--color-text-inverse)]"
     : "bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-default)] hover:text-[var(--color-text-primary)]";
+
+  const dynamicStyle: React.CSSProperties | undefined =
+    active && color
+      ? {
+          background: `color-mix(in srgb, ${color} 15%, transparent)`,
+          color: color,
+          borderWidth: "1px",
+          borderColor: `color-mix(in srgb, ${color} 30%, transparent)`,
+        }
+      : undefined;
 
   return (
     <button
       type="button"
       onClick={onClick}
       className={`${baseClasses} ${stateClasses}`}
+      style={dynamicStyle}
       aria-pressed={active}
     >
       {color && (

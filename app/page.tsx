@@ -81,8 +81,11 @@ export default async function Home() {
       />
 
       {/* Hero Section — always dark */}
-      <section className="bg-[var(--color-hero-bg)]">
-        <Container className="py-10 sm:py-14">
+      <section className="hero-mesh overflow-hidden relative">
+        {/* Decorative orbs */}
+        <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-violet-500/8 blur-3xl" aria-hidden />
+        <Container className="py-12 sm:py-16 lg:py-20">
           <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
             {/* Feature */}
             {highImpactRelease && (
@@ -111,16 +114,18 @@ export default async function Home() {
       />
 
       {/* Newsletter CTA — subtle */}
-      <section className="border-t border-[var(--color-border-default)] bg-[var(--color-bg-primary)]">
+      <section className="border-t border-[var(--color-border-default)] newsletter-gradient">
         <Container size="narrow" className="py-12 sm:py-16 text-center">
-          <Mail className="mx-auto mb-3 h-8 w-8 text-[var(--color-text-tertiary)]" />
-          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--color-brand)]/10">
+            <Mail className="h-6 w-6 text-[var(--color-brand)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)] sm:text-2xl">
             Digest semanal
           </h2>
           <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
             Los releases más relevantes directo en tu email, cada semana.
           </p>
-          <div className="mx-auto mt-5 max-w-sm">
+          <div className="mx-auto mt-6 max-w-sm rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4 shadow-[var(--shadow-sm)]">
             <NewsletterForm />
           </div>
         </Container>

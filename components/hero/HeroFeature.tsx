@@ -2,7 +2,6 @@ import type { ReleaseNote } from "@/types/release";
 import type { NewsArticle } from "@/types/news";
 import Link from "next/link";
 import { ArrowRight, AlertTriangle } from "lucide-react";
-import { formatRelativeTime } from "@/lib/formatTime";
 import { formatDate } from "@/lib/utils";
 import { sanitizeReleaseText } from "@/lib/utils";
 
@@ -29,12 +28,18 @@ export default function HeroFeature(props: HeroFeatureProps) {
     return (
       <Link
         href={`/releases/${r.id}`}
-        className="group relative flex flex-col justify-end overflow-hidden rounded-[var(--radius-xl)] border border-white/10 bg-gradient-to-br from-gray-800 to-gray-900 p-6 sm:p-8 min-h-[320px] transition-all hover:border-white/20"
+        className="group relative flex flex-col justify-end overflow-hidden rounded-[var(--radius-xl)] glass-card p-6 sm:p-8 min-h-[320px] transition-all hover:border-white/20 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
       >
-        {/* Accent bar */}
+        {/* Accent bar — gradient */}
         <div
-          className="absolute top-0 left-0 h-1 w-full"
-          style={{ backgroundColor: accentColor }}
+          className="absolute top-0 left-0 h-[3px] w-full"
+          style={{ background: `linear-gradient(90deg, ${accentColor}, transparent)` }}
+        />
+        {/* Category radial glow */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-20"
+          style={{ background: `radial-gradient(ellipse at 20% 0%, ${accentColor}, transparent 60%)` }}
+          aria-hidden
         />
 
         <div className="mt-auto">
@@ -55,7 +60,7 @@ export default function HeroFeature(props: HeroFeatureProps) {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-white sm:text-3xl leading-tight">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl leading-tight">
             {r.technology} <span className="text-white/60">v{r.version}</span>
           </h2>
 
@@ -91,14 +96,15 @@ export default function HeroFeature(props: HeroFeatureProps) {
       href={a.sourceUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex flex-col justify-end overflow-hidden rounded-[var(--radius-xl)] border border-white/10 bg-gradient-to-br from-gray-800 to-gray-900 p-6 sm:p-8 min-h-[320px] transition-all hover:border-white/20"
+      className="group relative flex flex-col justify-end overflow-hidden rounded-[var(--radius-xl)] glass-card p-6 sm:p-8 min-h-[320px] transition-all hover:border-white/20 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
     >
-      <div className="absolute top-0 left-0 h-1 w-full bg-purple-500" />
+      <div className="absolute top-0 left-0 h-[3px] w-full" style={{ background: "linear-gradient(90deg, #a855f7, transparent)" }} />
+      <div className="pointer-events-none absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 20% 0%, #a855f7, transparent 60%)" }} aria-hidden />
 
       <div className="mt-auto">
         <span className="overline text-purple-400">NOTICIAS</span>
 
-        <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl leading-tight line-clamp-2">
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl leading-tight line-clamp-2">
           {a.titleEs ?? a.title}
         </h2>
 

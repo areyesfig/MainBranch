@@ -2,7 +2,6 @@ import type { ReleaseNote } from "@/types/release";
 import type { NewsArticle } from "@/types/news";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { formatRelativeTime } from "@/lib/formatTime";
 import { formatDate } from "@/lib/utils";
 import { sanitizeReleaseText } from "@/lib/utils";
 
@@ -33,7 +32,7 @@ function SecondaryCard({ item }: { item: HeroSecondaryItem }) {
     return (
       <Link
         href={`/releases/${r.id}`}
-        className="group flex flex-col justify-end rounded-[var(--radius-lg)] border border-white/10 bg-gray-800/50 p-5 transition-all hover:border-white/20 hover:bg-gray-800/80 flex-1"
+        className="group flex flex-col justify-end rounded-[var(--radius-lg)] glass-card p-5 transition-all hover:border-white/20 hover:shadow-[0_4px_24px_rgba(0,0,0,0.2)] flex-1"
       >
         <div className="flex items-center gap-2 mb-2">
           <span className="overline" style={{ color: accentColor }}>
@@ -62,7 +61,7 @@ function SecondaryCard({ item }: { item: HeroSecondaryItem }) {
       href={a.sourceUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col justify-end rounded-[var(--radius-lg)] border border-white/10 bg-gray-800/50 p-5 transition-all hover:border-white/20 hover:bg-gray-800/80 flex-1"
+      className="group flex flex-col justify-end rounded-[var(--radius-lg)] glass-card p-5 transition-all hover:border-white/20 hover:shadow-[0_4px_24px_rgba(0,0,0,0.2)] flex-1"
     >
       <span className="overline text-purple-400 mb-2">NOTICIAS</span>
       <h3 className="text-base font-semibold text-white leading-snug line-clamp-2">

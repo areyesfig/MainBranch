@@ -21,6 +21,42 @@ export const metadata: Metadata = {
   },
 };
 
+const STACK_CATEGORY: Record<string, string> = {
+  nextjs: "frontend", react: "frontend", vue: "frontend", svelte: "frontend",
+  astro: "frontend", nuxt: "frontend", remix: "frontend", vite: "tools",
+  typescript: "frontend", tailwind: "frontend",
+  nodejs: "backend", deno: "backend", rust: "backend", go: "backend",
+  pytorch: "ai-ml", langchain: "ai-ml", huggingface: "ai-ml", pandas: "ai-ml",
+  claude: "llms", openai: "llms", gemini: "llms", mistral: "llms",
+  grok: "llms", ollama: "llms", deepseek: "llms",
+  vercel: "devops", github: "tools", cloudflare: "devops",
+  supabase: "databases", pinecone: "databases",
+  docker: "devops", kubernetes: "devops",
+  "react-native": "mobile",
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  frontend: "var(--color-cat-frontend)",
+  backend: "var(--color-cat-backend)",
+  "ai-ml": "var(--color-cat-ai-ml)",
+  llms: "var(--color-cat-llms)",
+  devops: "var(--color-cat-devops)",
+  mobile: "var(--color-cat-mobile)",
+  databases: "var(--color-cat-databases)",
+  tools: "var(--color-cat-tools)",
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  frontend: "Frontend",
+  backend: "Backend",
+  "ai-ml": "AI / ML",
+  llms: "LLMs",
+  devops: "DevOps",
+  mobile: "Mobile",
+  databases: "Databases",
+  tools: "Tools",
+};
+
 export default async function TechIndexPage() {
   const releases = await getReleases();
 
@@ -56,18 +92,32 @@ export default async function TechIndexPage() {
           {stacks.map((slug, i) => {
             const count = countByStack[slug] ?? 0;
             const breaking = breakingByStack[slug] ?? 0;
+            const category = STACK_CATEGORY[slug] ?? "tools";
+            const accentColor = CATEGORY_COLORS[category] ?? "var(--color-brand)";
 
             return (
               <Link
                 key={slug}
                 href={`/tech/${slug}`}
-                className="group animate-slide-up rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-4 transition-all hover:-translate-y-0.5 hover:border-[var(--color-brand)] hover:shadow-md"
-                style={i < 20 ? { animationDelay: `${i * 50}ms` } : undefined}
+                className="group animate-slide-up gradient-border-top card-glow rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5 transition-all"
+                style={
+                  {
+                    "--accent-color": accentColor,
+                    animationDelay: i < 20 ? `${i * 50}ms` : undefined,
+                  } as React.CSSProperties
+                }
+                data-category={category}
               >
                 <h2 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-brand)]">
                   {STACK_LABELS[slug]}
                 </h2>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span
+                  className="text-xs mt-0.5 block"
+                  style={{ color: accentColor }}
+                >
+                  {CATEGORY_LABELS[category] ?? category}
+                </span>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   {count > 0 ? (
                     <Badge variant="blue">{count} releases</Badge>
                   ) : (
@@ -85,4 +135,3 @@ export default async function TechIndexPage() {
     </div>
   );
 }
-

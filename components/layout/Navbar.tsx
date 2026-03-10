@@ -37,7 +37,7 @@ export default function Navbar() {
             href="/"
             className="flex items-center gap-2 text-base font-bold tracking-tight text-[var(--color-text-primary)] transition-colors hover:text-[var(--color-text-secondary)]"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-text-primary)] text-xs font-bold text-[var(--color-text-inverse)]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-gradient-to-br from-blue-500 to-violet-600 text-xs font-bold text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)]">
               MB
             </span>
             <span className="hidden sm:inline">Main Branch</span>
