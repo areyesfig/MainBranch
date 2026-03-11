@@ -126,14 +126,45 @@ export default function PrivacyPage() {
             <p className="mt-2">
               El sitio utiliza el mínimo necesario: preferencias de tema (por ejemplo en
               localStorage) y, si en el futuro se incorporan análisis de uso, se
-              informará aquí. No usamos cookies de publicidad ni de seguimiento
-              cross-site sin tu consentimiento.
+              informará aquí.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
-              7. Tus derechos
+              7. Publicidad — Google AdSense
+            </h2>
+            <p className="mt-2">
+              Este sitio puede mostrar anuncios proporcionados por Google AdSense.
+              Google utiliza cookies para mostrar anuncios basados en visitas
+              previas a este u otros sitios web. Puedes inhabilitar el uso de
+              cookies de publicidad personalizada visitando la{" "}
+              <a
+                href="https://www.google.com/settings/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-brand)] underline hover:no-underline"
+              >
+                configuración de anuncios de Google
+              </a>
+              . Proveedores de publicidad terceros pueden usar cookies para
+              mostrar anuncios en función de datos de navegación. Para más
+              información, consulta{" "}
+              <a
+                href="https://policies.google.com/technologies/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-brand)] underline hover:no-underline"
+              >
+                cómo usa Google los datos de los sitios de sus partners
+              </a>
+              .
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              8. Tus derechos
             </h2>
             <p className="mt-2">
               Puedes solicitar acceso, rectificación, supresión o limitación del
@@ -151,7 +182,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
-              8. Cambios en esta política
+              9. Cambios en esta política
             </h2>
             <p className="mt-2">
               Podemos actualizar esta política de privacidad. Los cambios relevantes se
@@ -163,7 +194,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
-              9. Contacto
+              10. Contacto
             </h2>
             <p className="mt-2">
               Para preguntas sobre esta política o sobre tus datos personales, puedes

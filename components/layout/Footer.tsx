@@ -54,6 +54,7 @@ export default function Footer() {
                 { href: "/noticias", label: "Noticias" },
                 { href: "/timeline", label: "Timeline" },
                 { href: "/digest", label: "Digests" },
+                { href: "/recursos", label: "Recursos" },
                 { href: "/about", label: "Acerca de" },
               ].map((link) => (
                 <li key={link.href}>

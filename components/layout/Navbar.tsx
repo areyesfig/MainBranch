@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/tech", label: "Tech" },
   { href: "/noticias", label: "Noticias" },
   { href: "/timeline", label: "Timeline" },
+  { href: "/recursos", label: "Recursos" },
 ];
 
 export default function Navbar() {

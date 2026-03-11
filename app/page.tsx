@@ -10,6 +10,9 @@ import { getReleases } from "@/lib/data/releases";
 import { getNews } from "@/lib/data/news";
 import { isPlaceholderVersion } from "@/lib/utils";
 import { Mail } from "lucide-react";
+import { ADS_CONFIG, AD_SLOTS } from "@/lib/ads/config";
+
+import HomeAdBanner from "@/components/ads/HomeAdBanner";
 
 export default async function Home() {
   const [releases, newsArticles] = await Promise.all([getReleases(), getNews()]);
@@ -103,6 +106,15 @@ export default async function Home() {
         <section className="py-8 sm:py-10">
           <Container>
             <NowInTech releases={nowReleases} />
+          </Container>
+        </section>
+      )}
+
+      {/* Ad Banner */}
+      {ADS_CONFIG.enabled && AD_SLOTS.homeBanner.id && (
+        <section className="py-4">
+          <Container>
+            <HomeAdBanner />
           </Container>
         </section>
       )}

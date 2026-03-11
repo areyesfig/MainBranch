@@ -36,6 +36,9 @@ import ArticleMeta from "@/components/article/ArticleMeta";
 import ArticleSummary from "@/components/article/ArticleSummary";
 import ReadingProgress from "@/components/article/ReadingProgress";
 import RelatedReleases from "@/components/news/RelatedReleases";
+import { ADS_CONFIG, AD_SLOTS } from "@/lib/ads/config";
+import InArticleAd from "@/components/ads/InArticleAd";
+import ReleaseBottomAd from "@/components/ads/ReleaseBottomAd";
 
 export const revalidate = 3600;
 
@@ -201,6 +204,13 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
             />
           </div>
 
+          {/* In-article Ad */}
+          {ADS_CONFIG.enabled && AD_SLOTS.inArticle.id && (
+            <div className="mt-6">
+              <InArticleAd />
+            </div>
+          )}
+
           {/* TLDR Summary */}
           <ArticleSummary
             tldr={sanitizedTldr}
@@ -313,6 +323,13 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
 
           {/* Related Releases */}
           <RelatedReleases releases={relatedReleases} />
+
+          {/* Bottom Ad */}
+          {ADS_CONFIG.enabled && AD_SLOTS.releaseBottom.id && (
+            <div className="mt-8">
+              <ReleaseBottomAd />
+            </div>
+          )}
         </div>
       </article>
     </>

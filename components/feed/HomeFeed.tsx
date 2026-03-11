@@ -8,7 +8,12 @@ import ViewToggle from "@/components/feed/ViewToggle";
 import TrendingItem from "@/components/feed/TrendingItem";
 import { AlertTriangle, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { formatRelativeTime } from "@/lib/formatTime";
+
+const AdSidebar = dynamic(() => import("@/components/ads/AdSidebar"), {
+  ssr: false,
+});
 
 type ViewMode = "signal" | "flow";
 
@@ -162,6 +167,9 @@ export default function HomeFeed({ releases, trendingReleases }: HomeFeedProps) 
                   </div>
                 </div>
               )}
+
+              {/* Ad */}
+              <AdSidebar />
             </aside>
           </div>
         </div>
