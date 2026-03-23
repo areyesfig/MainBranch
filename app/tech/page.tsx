@@ -26,7 +26,7 @@ const STACK_CATEGORY: Record<string, string> = {
   astro: "frontend", nuxt: "frontend", remix: "frontend", vite: "tools",
   typescript: "frontend", tailwind: "frontend",
   nodejs: "backend", deno: "backend", rust: "backend", go: "backend",
-  pytorch: "ai-ml", langchain: "ai-ml", huggingface: "ai-ml", pandas: "ai-ml",
+  pytorch: "ai-ml", huggingface: "ai-ml", pandas: "ai-ml",
   claude: "llms", openai: "llms", gemini: "llms", mistral: "llms",
   grok: "llms", ollama: "llms", deepseek: "llms",
   vercel: "devops", github: "tools", cloudflare: "devops",

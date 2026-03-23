@@ -27,11 +27,16 @@ export default function ShareButton({ title, url, technology, version, shareText
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  const shareText = shareTextProp
+  const MAX_TWEET_TEXT = 220; // ~257 disponibles (280 - 23 por URL), margen para hashtags
+  const rawText = shareTextProp
     ? shareTextProp
     : technology && version
       ? `${technology} v${version} — ${title}`
       : title;
+  const shareText =
+    rawText.length > MAX_TWEET_TEXT
+      ? rawText.slice(0, MAX_TWEET_TEXT - 1) + "…"
+      : rawText;
 
   function shareX() {
     window.open(
