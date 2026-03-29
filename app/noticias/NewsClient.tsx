@@ -35,7 +35,7 @@ interface NewsClientProps {
 export default function NewsClient({ initialArticles }: NewsClientProps) {
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"recent" | "popular">("recent");
+
   const [lang, setLang] = useState<"en" | "es">("es");
 
   const topics = useMemo(() => {
@@ -51,11 +51,8 @@ export default function NewsClient({ initialArticles }: NewsClientProps) {
     if (selectedTopic) {
       result = result.filter((a) => a.topic === selectedTopic);
     }
-    if (sortBy === "popular") {
-      result = [...result].sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
-    }
     return result;
-  }, [initialArticles, selectedTopic, searchQuery, sortBy]);
+  }, [initialArticles, selectedTopic, searchQuery]);
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -137,31 +134,6 @@ export default function NewsClient({ initialArticles }: NewsClientProps) {
                 }`}
               >
                 EN
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-[var(--color-text-secondary)]">
-                Ordenar:
-              </span>
-              <button
-                onClick={() => setSortBy("recent")}
-                className={`rounded-[var(--radius-md)] px-3 py-1.5 text-sm font-medium transition-colors ${
-                  sortBy === "recent"
-                    ? "bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]"
-                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
-                }`}
-              >
-                Más recientes
-              </button>
-              <button
-                onClick={() => setSortBy("popular")}
-                className={`rounded-[var(--radius-md)] px-3 py-1.5 text-sm font-medium transition-colors ${
-                  sortBy === "popular"
-                    ? "bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]"
-                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
-                }`}
-              >
-                Más populares
               </button>
             </div>
           </div>
