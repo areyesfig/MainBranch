@@ -2,10 +2,7 @@
 
 import type { NewsArticle } from "@/types/news";
 import { formatDate } from "@/lib/utils";
-import { ExternalLink, Calendar, User, MessageSquare } from "lucide-react";
-import Badge from "@/components/ui/Badge";
 import { getTopicLabel } from "@/lib/topicLabels";
-import ShareButton from "@/components/news/ShareButton";
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -13,21 +10,7 @@ interface NewsCardProps {
   isActive?: boolean;
 }
 
-const TOPIC_VARIANTS: Record<string, "green" | "orange" | "blue" | "purple" | "gray" | "yellow" | "red"> = {
-  openai: "green",
-  claude: "orange",
-  gemini: "blue",
-  deepseek: "purple",
-  grok: "gray",
-  mistral: "yellow",
-  meta: "blue",
-  copilot: "gray",
-  apple: "gray",
-  nvidia: "green",
-  "general-ai": "gray",
-};
-
-const TOPIC_ACCENT: Record<string, string> = {
+const TOPIC_BADGE_COLORS: Record<string, string> = {
   openai: "bg-green-500",
   claude: "bg-orange-500",
   gemini: "bg-blue-500",
@@ -41,80 +24,79 @@ const TOPIC_ACCENT: Record<string, string> = {
   "general-ai": "bg-slate-500",
 };
 
-export default function NewsCard({ article, lang = "es", isActive }: NewsCardProps) {
-  const topicVariant = TOPIC_VARIANTS[article.topic ?? ""] ?? "gray";
-  const accentColor = TOPIC_ACCENT[article.topic ?? ""] ?? "bg-[var(--color-text-tertiary)]";
+function estimateReadingTime(text: string): number {
+  const words = text.split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
 
+export default function NewsCard({ article, lang = "es", isActive }: NewsCardProps) {
+  const badgeColor = TOPIC_BADGE_COLORS[article.topic ?? ""] ?? "bg-slate-500";
   const displayTitle = lang === "es" && article.titleEs ? article.titleEs : article.title;
-  const displaySummary = lang === "es" && article.summaryEs ? article.summaryEs : article.summary;
+  const readTime = estimateReadingTime(article.content || article.summary || "");
 
   return (
-    <article className={`group relative rounded-[var(--radius-lg)] border bg-[var(--color-bg-elevated)] shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg ${
-      isActive
-        ? "border-[var(--color-brand)] ring-2 ring-[var(--color-brand)]"
-        : "border-[var(--color-border-default)]"
-    }`}>
-      {/* Topic accent bar */}
-      <div className={`h-0.5 rounded-t-[var(--radius-lg)] ${accentColor}`} />
-
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <h3 className="text-lg font-bold leading-snug text-[var(--color-text-primary)] line-clamp-2">
-            {displayTitle}
-          </h3>
-        </div>
-
-        {/* Topic + Source */}
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          {article.topic && (
-            <Badge variant={topicVariant}>{getTopicLabel(article.topic)}</Badge>
-          )}
-          <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
-            <MessageSquare className="h-3 w-3" />
-            {article.sourceName}
-          </span>
-        </div>
-
-        {/* Summary */}
-        <p className="mb-4 text-sm text-[var(--color-text-secondary)] line-clamp-3">
-          {displaySummary}
-        </p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t border-[var(--color-border-subtle)] pt-4">
-          <div className="flex items-center gap-3 text-xs text-[var(--color-text-tertiary)]">
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              <time dateTime={article.publishedAt.toString()}>
-                {formatDate(article.publishedAt)}
-              </time>
-            </span>
-            {article.author && (
-              <span className="flex items-center gap-1">
-                <User className="h-3.5 w-3.5" />
-                {article.author}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton
-              title={displayTitle}
-              url={article.sourceUrl}
-              shareText={displayTitle}
-            />
-            <a
-              href={article.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm font-medium text-[var(--color-brand)] transition-colors hover:opacity-80"
+    <a
+      href={article.sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group block overflow-hidden rounded-xl border bg-[var(--color-bg-elevated)] transition-all hover:-translate-y-1 hover:shadow-lg ${
+        isActive
+          ? "border-[var(--color-brand)] ring-2 ring-[var(--color-brand)]"
+          : "border-[var(--color-border-default)]"
+      }`}
+    >
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-[var(--color-bg-tertiary)]">
+        {article.imageUrl ? (
+          <img
+            src={article.imageUrl}
+            alt={displayTitle}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
+            <svg
+              className="h-12 w-12 text-slate-400 dark:text-slate-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
             >
-              Leer más
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
+              />
+            </svg>
           </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {/* Topic badge */}
+        {article.topic && (
+          <span
+            className={`mb-3 inline-block rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white ${badgeColor}`}
+          >
+            {getTopicLabel(article.topic)}
+          </span>
+        )}
+
+        {/* Title */}
+        <h3 className="mb-3 text-base font-bold leading-snug text-[var(--color-text-primary)] line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors">
+          {displayTitle}
+        </h3>
+
+        {/* Meta */}
+        <div className="space-y-0.5 text-xs text-[var(--color-text-tertiary)]">
+          {article.author && (
+            <p>Por {article.author}</p>
+          )}
+          <p>{formatDate(article.publishedAt)}</p>
+          <p>{readTime} min de lectura</p>
         </div>
       </div>
-    </article>
+    </a>
   );
 }
