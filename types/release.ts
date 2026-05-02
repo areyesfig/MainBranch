@@ -1,3 +1,12 @@
+export interface AISummary {
+  tldr: string;
+  changes: string[];
+  audience: string;
+  action_level: "none" | "recommended" | "required";
+  action_reason: string;
+  migration: { before: string; after: string; note: string } | null;
+}
+
 /**
  * Interfaz para una nota de lanzamiento de tecnología
  */
@@ -161,4 +170,9 @@ export interface ReleaseNote {
    * Votos de la comunidad (se acumulan vía /api/releases/[id]/vote)
    */
   votes?: number;
+
+  /**
+   * Resumen editorial generado por IA (estructura fija)
+   */
+  aiSummary?: AISummary;
 }

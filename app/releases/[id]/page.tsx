@@ -32,6 +32,8 @@ const AIReleaseExplanation = dynamic(() => import("@/components/news/AIReleaseEx
     </div>
   ),
 });
+
+const AISummaryCard = dynamic(() => import("@/components/news/AISummaryCard"));
 import ArticleMeta from "@/components/article/ArticleMeta";
 import ArticleSummary from "@/components/article/ArticleSummary";
 import ReadingProgress from "@/components/article/ReadingProgress";
@@ -243,9 +245,16 @@ export default async function ReleaseDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          {/* AI Explanation */}
+          {/* AI Summary (structured, pre-generated) or on-demand explanation */}
           <div className="mt-8">
-            <AIReleaseExplanation releaseId={release.id} />
+            {release.aiSummary ? (
+              <AISummaryCard
+                summary={release.aiSummary}
+                rawDescription={sanitizedDescription || undefined}
+              />
+            ) : (
+              <AIReleaseExplanation releaseId={release.id} />
+            )}
           </div>
 
           {/* Breaking Changes */}

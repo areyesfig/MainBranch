@@ -4,12 +4,14 @@ import { useState, useMemo, useEffect } from "react";
 import type { ReleaseNote } from "@/types/release";
 import CategoryChipBar from "@/components/layout/CategoryChipBar";
 import SignalCard from "@/components/feed/SignalCard";
+import GroupedSignalCard from "@/components/feed/GroupedSignalCard";
 import ViewToggle from "@/components/feed/ViewToggle";
 import TrendingItem from "@/components/feed/TrendingItem";
 import { AlertTriangle, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { formatRelativeTime } from "@/lib/formatTime";
+import { buildFeed } from "@/lib/feed/groupReleases";
 
 const AdSidebar = dynamic(() => import("@/components/ads/AdSidebar"), {
   ssr: false,
@@ -55,8 +57,11 @@ export default function HomeFeed({ releases, trendingReleases }: HomeFeedProps) 
     return releases.filter((r) => r.category === category);
   }, [releases, category]);
 
-  const visible = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+  // Build feed with grouped items
+  const feedItems = useMemo(() => buildFeed(filtered), [filtered]);
+
+  const visible = feedItems.slice(0, visibleCount);
+  const hasMore = visibleCount < feedItems.length;
 
   // Breaking changes for sidebar
   const breakingReleases = useMemo(
@@ -95,15 +100,39 @@ export default function HomeFeed({ releases, trendingReleases }: HomeFeedProps) 
             <div>
               {viewMode === "signal" ? (
                 <div className="divide-y divide-[var(--color-border-subtle)] rounded-[var(--radius-lg)] border border-[var(--color-border-default)] overflow-hidden">
-                  {visible.map((r) => (
-                    <SignalCard key={r.id} release={r} mode="signal" />
-                  ))}
+                  {visible.map((item) =>
+                    item.kind === "group" ? (
+                      <GroupedSignalCard
+                        key={`group-${item.tech}-${item.latest.getTime()}`}
+                        tech={item.tech}
+                        category={item.category}
+                        releases={item.releases}
+                        latest={item.latest}
+                        hasBreaking={item.hasBreaking}
+                        mode="signal"
+                      />
+                    ) : (
+                      <SignalCard key={item.release.id} release={item.release} mode="signal" />
+                    )
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {visible.map((r) => (
-                    <SignalCard key={r.id} release={r} mode="flow" />
-                  ))}
+                  {visible.map((item) =>
+                    item.kind === "group" ? (
+                      <GroupedSignalCard
+                        key={`group-${item.tech}-${item.latest.getTime()}`}
+                        tech={item.tech}
+                        category={item.category}
+                        releases={item.releases}
+                        latest={item.latest}
+                        hasBreaking={item.hasBreaking}
+                        mode="flow"
+                      />
+                    ) : (
+                      <SignalCard key={item.release.id} release={item.release} mode="flow" />
+                    )
+                  )}
                 </div>
               )}
 

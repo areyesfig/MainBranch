@@ -4,7 +4,7 @@
 
 import { prisma } from "@/lib/db";
 import { validateReleaseForDb } from "@/lib/schemas/release";
-import type { ReleaseNote } from "@/types/release";
+import type { ReleaseNote, AISummary } from "@/types/release";
 import {
   cacheGet,
   cacheSet,
@@ -50,7 +50,18 @@ function dbToReleaseNote(
     migrationComplexity: r.migrationComplexity as ReleaseNote["migrationComplexity"] ?? undefined,
     impactScore: r.impactScore ?? undefined,
     votes: r.votes,
+    aiSummary: parseJson<AISummary>(r.aiSummary ?? null),
   };
+}
+
+export async function updateReleaseAiSummary(id: string, summary: AISummary): Promise<void> {
+  await prisma.release.update({
+    where: { id },
+    data: {
+      aiSummary: JSON.stringify(summary),
+      aiSummaryGeneratedAt: new Date(),
+    },
+  });
 }
 
 /**
